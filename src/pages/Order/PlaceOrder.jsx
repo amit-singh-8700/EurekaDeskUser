@@ -34,6 +34,7 @@ function PlaceOrder() {
   }
 
   const verifyotp = {
+    phone: phone,
     otp: otp
   }
   // const resendotp = {
@@ -44,13 +45,11 @@ function PlaceOrder() {
 
   const handleClick = async () => {
     try {
-      const api = await axios.post(
+       await axios.post(
         `${login}`,
         sinup,
       );
-      const data = await api.data;
-      sessionStorage.setItem("signature", data.signature);
-      console.log(api.res);
+      
       alert("registration successful");
       setStep(2)
       
@@ -63,7 +62,7 @@ function PlaceOrder() {
 
   const verify = async () => {
     try {
-      await axios.patch(
+      const api = await axios.patch(
         `${verifyOTPAPI}`,
         verifyotp,
         {
@@ -73,6 +72,10 @@ function PlaceOrder() {
           },
         }
       );
+      const data = await api.data;
+      console.log(api.res);
+      sessionStorage.setItem("signature", data.signature);
+
       alert("registration successful");
       setStep(2)
       history("/PayBill")
@@ -262,7 +265,7 @@ function PlaceOrder() {
                   <div>
                     <div className="d-flex justify-content-between">
                       <h6>Almost There</h6>
-                      <div data-bs-dismiss="modal"><i className="bi bi-x" style={{ cursor: 'pointer' }}></i></div>
+                      <div data-bs-dismiss="modal"><i className="bi bi-x" style={{ cursor: "pointer" }}></i></div>
                     </div>
                     <p style={{ font: "small" }}>
                       Enter your name and mobile number to place order

@@ -1,0 +1,46 @@
+.heading{
+    font-size:22px;
+    font-weight:bold;
+}
+.offerCard{
+    font-size: 16px;
+    font-weight: 600;
+}
+.mrp{
+    font-size: 12px;
+    font-weight: 700;
+}
+.offer-percent{
+    font-size: 16px;
+    font-weight:700;
+}
+
+@media only screen and (max-width: 576px) {
+    .heading{
+           font-size:17px;
+           font-weight: 700;
+    }
+    .offerCard{
+        font-size: 11px;
+        font-weight: 500;
+    }
+    .mrp{
+        font-size: 9px;
+        font-weight:400;
+    }
+    .offer-percent{
+        font-size: 12px;
+        font-weight:700;
+    }
+  }
+
+  .Menu-btn{
+    background-color: white;
+  }
+  .hand{
+    display: flex;
+    position: fixed;
+    bottom: 70px;
+    right: 10px;
+    z-index: 99;
+  }

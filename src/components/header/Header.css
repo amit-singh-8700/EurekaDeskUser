@@ -1,0 +1,21 @@
+.search-btn{
+    border-left: none !important;
+    border: none !important;
+
+    
+}
+.search-input{
+    box-shadow: none !important;
+    border: none !important;
+}
+.form-check-input{
+    box-shadow: none !important;
+    border: 1px solid gray;
+    color: --bs-teal !important;
+}
+
+@media only screen and (max-width: 576px) {
+    .display-none{
+             display: none;
+    }
+  }

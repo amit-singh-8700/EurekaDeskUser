@@ -1,9 +1,14 @@
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from 'axios';
+import axios from "axios";
 import Login from "./Login";
 
-import { login, verifyOTPAPI, resendOTPAPI } from "../../components/api/api_base_url";
+import {
+  login,
+  verifyOTPAPI,
+  resendOTPAPI,
+  getViewCart,
+} from "../../components/api/api_base_url";
 
 function PlaceOrder() {
   const [quantity, setQuantity] = useState(1);
@@ -24,79 +29,67 @@ function PlaceOrder() {
   const token = sessionStorage.getItem("signature");
   const [step, setStep] = useState(1);
   const [phone, setphone] = useState([]);
-  const [otp, setOtp] = useState([])
-  // const [resend, setResend] = useState([])
+  const [otp, setOtp] = useState([]);
+  const [viewcart, setviewcart] = useState([]);
 
-
-  const sinup =
-  {
+  const sinup = {
     phone: phone,
-  }
+  };
 
   const verifyotp = {
     phone: phone,
-    otp: otp
-  }
+    otp: otp,
+  };
   // const resendotp = {
   //   resend: resend
   // }
 
-  console.log(`${login}`)
+  console.log(`${login}`);
 
   const handleClick = async () => {
     try {
-       await axios.post(
-        `${login}`,
-        sinup,
-      );
-      
+      await axios.post(`${login}`, sinup);
+
       alert("registration successful");
-      setStep(2)
-      
+      setStep(2);
+
       // window.location.reload(false);
-    } catch (error) {
+    } catch (error) { 
       console.log(error);
       alert("invalid credentials");
     }
-  }
+  };
 
   const verify = async () => {
     try {
-      const api = await axios.patch(
-        `${verifyOTPAPI}`,
-        verifyotp,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const api = await axios.patch(`${verifyOTPAPI}`, verifyotp, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
       const data = await api.data;
       console.log(api.res);
       sessionStorage.setItem("signature", data.signature);
 
       alert("registration successful");
-      setStep(2)
-      history("/PayBill")
+      setStep(2);
+      history("/PayBill");
       window.location.reload(false);
     } catch (error) {
       console.log(error);
       alert("invalid credentials");
     }
-  }
+  };
 
   const reotp = async () => {
     try {
-      await axios.get(
-        `${resendOTPAPI}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      await axios.get(`${resendOTPAPI}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
       alert("Otp   successful");
       // setStep(3)
       // window.location.reload(false);
@@ -104,20 +97,48 @@ function PlaceOrder() {
       console.log(error);
       alert("invalid credentials");
     }
-  }
+  };
+
+  const getCart = async () => {
+    try {
+      const viewcartAPI = await axios.get(`${getViewCart}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await viewcartAPI.data;
+      setviewcart(data);
+      // console.log(getFoodsAPi.data);
+      // alert("successful");
+      // setStep(3)
+      // window.location.reload(false);
+    } catch (error) {
+      console.log(error);
+      // alert("invalid credentials");
+    }
+  };
+
+  useEffect(() => {
+    getCart();
+  }, []);
+
   return (
     <>
       <div className="container position-relative">
         <div className="row justify-content-center">
           <div className="col-lg-7 my-2 shadow-sm rounded">
-            <div className="row flex-row-reverse">
+            {/* {viewcart.map((data, index) => {
+                return (
+                  
+                      <div  key={data.id} className="row flex-row-reverse">
               <div className="col-lg-4 col-4 content-center">
                 <div>
                   <div className="qty-btn-cover py-1">
                     <button onClick={handleDecrease} className="qty-btn">
                       -
                     </button>
-                    <span>{quantity}</span>
+                    <span>{quantity}</span>   
                     <button onClick={handleIncrease} className="qty-btn">
                       +
                     </button>
@@ -143,6 +164,9 @@ function PlaceOrder() {
               </div>
               <hr />
             </div>
+                );
+              })} */}
+
             <div className="row flex-row-reverse">
               <div className="col-lg-4 col-4 content-center">
                 <div>
@@ -232,20 +256,24 @@ function PlaceOrder() {
                 {totalPrice}
               </div>{" "}
               <div>
-              {token ?
-                <Link
-                    to='/payBill'  style={{ cursor: "pointer" }}
-                  className="fw-bold text-white text-decoration-none"
-                >
-                  Place Order
-                </Link> :
-                <Link
-                data-bs-toggle="modal" data-bs-target="#exampleModal" 
-                   style={{ cursor: "pointer" }}
-                  className="fw-bold text-white text-decoration-none"
-                >
-                  Place Order
-                </Link>}
+                {token ? (
+                  <Link
+                    to="/payBill"
+                    style={{ cursor: "pointer" }}
+                    className="fw-bold text-white text-decoration-none"
+                  >
+                    Place Order
+                  </Link>
+                ) : (
+                  <Link
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModal"
+                    style={{ cursor: "pointer" }}
+                    className="fw-bold text-white text-decoration-none"
+                  >
+                    Place Order
+                  </Link>
+                )}
               </div>
             </div>
           </div>
@@ -260,63 +288,77 @@ function PlaceOrder() {
       >
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content">
-          <div className="modal-body">
-                {step === 1 && (
-                  <div>
-                    <div className="d-flex justify-content-between">
-                      <h6>Almost There</h6>
-                      <div data-bs-dismiss="modal"><i className="bi bi-x" style={{ cursor: "pointer" }}></i></div>
-                    </div>
-                    <p style={{ font: "small" }}>
-                      Enter your name and mobile number to place order
-                    </p>
-                    <input
-                      type="phone"
-                      className="form-control my-3 py-2 border"
-                      placeholder="Phone Number"
-                      value={phone}
-                      onChange={(e) => setphone(e.target.value)}
-                    />
-                    {/* <Link to="/paymentMode" className="text-decoration-none"> */}
-                    <div
-                      className={`AddItems-btn text-center px-3 py-2 fw-bold`}
-                      style={{ cursor: 'pointer' }}
-                      onClick={handleClick}
-                    >
-                      Send Otp
-                    </div>
-                    {/* </Link> */}
-                  </div>
-                )}
-                {step === 2 && (
-                  <div>
-                    <div className="d-flex justify-content-between">
-                      <button className="btn btn-sm btn-scondary border" onClick={() => setStep(1)}>Back</button>
-                      <h6>verify opt</h6>
-                      <div data-bs-dismiss="modal"><i className="bi bi-x" style={{ cursor: 'pointer' }}></i></div>
-                    </div>
-                    <input
-                      type="number"
-                      className="form-control my-3 py-2 border"
-                      placeholder="enter otp"
-                      value={otp}
-                      onChange={(e) => setOtp(e.target.value)}
-                    />
-                    
-                  <button className="border-0 bg-white text-success" onClick={reotp}>  <h6>Resend</h6></button>
-                
-                    <div
-                      className={`AddItems-btn text-center px-3 py-2 fw-bold`}
-                      style={{ cursor: 'pointer' }}
-                      onClick={verify}
-                    // data-bs-dismiss="modal"
-                    >
-                      Verify
+            <div className="modal-body">
+              {step === 1 && (
+                <div>
+                  <div className="d-flex justify-content-between">
+                    <h6>Almost There</h6>
+                    <div data-bs-dismiss="modal">
+                      <i className="bi bi-x" style={{ cursor: "pointer" }}></i>
                     </div>
                   </div>
-                )}
-              </div>
+                  <p style={{ font: "small" }}>
+                    Enter your name and mobile number to place order
+                  </p>
+                  <input
+                    type="phone"
+                    className="form-control my-3 py-2 border"
+                    placeholder="Phone Number"
+                    value={phone}
+                    onChange={(e) => setphone(e.target.value)}
+                  />
+                  {/* <Link to="/paymentMode" className="text-decoration-none"> */}
+                  <div
+                    className={`AddItems-btn text-center px-3 py-2 fw-bold`}
+                    style={{ cursor: "pointer" }}
+                    onClick={handleClick}
+                  >
+                    Send Otp
+                  </div>
+                  {/* </Link> */}
+                </div>
+              )}
+              {step === 2 && (
+                <div>
+                  <div className="d-flex justify-content-between">
+                    <button
+                      className="btn btn-sm btn-scondary border"
+                      onClick={() => setStep(1)}
+                    >
+                      Back
+                    </button>
+                    <h6>verify opt</h6>
+                    <div data-bs-dismiss="modal">
+                      <i className="bi bi-x" style={{ cursor: "pointer" }}></i>
+                    </div>
+                  </div>
+                  <input
+                    type="number"
+                    className="form-control my-3 py-2 border"
+                    placeholder="enter otp"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                  />
 
+                  <button
+                    className="border-0 bg-white text-success"
+                    onClick={reotp}
+                  >
+                    {" "}
+                    <h6>Resend</h6>
+                  </button>
+
+                  <div
+                    className={`AddItems-btn text-center px-3 py-2 fw-bold`}
+                    style={{ cursor: "pointer" }}
+                    onClick={verify}
+                    // data-bs-dismiss="modal"
+                  >
+                    Verify
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

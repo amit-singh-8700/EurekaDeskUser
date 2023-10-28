@@ -6,7 +6,7 @@ import Footer from "../../components/Footer/Footer";
 import Header from "../../components/header/Header";
 import BottomMenu from "./BottomMenu";
 // import "@lottiefiles/lottie-player";
-import animation from '../../animation/timer.json'
+import animation from "../../animation/timer.json";
 import Lottie from "lottie-react";
 
 function Home() {
@@ -43,9 +43,9 @@ function Home() {
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content">
             <div className="modal-body">
-             <div className="content-center">
-             <Lottie animationData={animation} loop={true} />
-             </div>
+              <div className="content-center">
+                <Lottie animationData={animation} loop={true} />
+              </div>
               <div className="py-2">
                 {" "}
                 <div className="text-center">

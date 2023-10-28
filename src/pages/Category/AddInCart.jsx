@@ -1,26 +1,15 @@
 import { React, useState } from "react";
 import { Link } from "react-router-dom";
 import "./AddInCart.css";
-import img3 from "../../img/img3.png";
 import Header from "../../components/header/Header";
+import axios from "axios";
+import { addToCartAPI, getFoodAPI, getFoodDetailAPI, getViewCart } from "../../components/api/api_base_url";
+import { useEffect } from "react";
+// import { getFoodDetailAPI } from "../../components/api/api_base_url";
+
 function AddInCart() {
-  const [quantity, setQuantity] = useState(1);
-  const productPrice = 500;
-
-  const handleDecrease = () => {
-    if (quantity > 1) {
-      setQuantity(quantity - 1);
-    }
-  };
-  const handleIncrease = () => {
-    setQuantity(quantity + 1);
-  };
-
-  const totalPrice = quantity * productPrice;
+  
   const [hide, setShow] = useState("d-none");
-  const next = () => {
-    setShow("");
-  };
   const category = [
     {
       id: "1",
@@ -82,7 +71,7 @@ function AddInCart() {
       id: "12",
       img: "img1.jpeg",
       categoryName: "Ladi pao",
-    },  
+    },
     {
       id: "13",
       img: "img1.jpeg",
@@ -99,6 +88,129 @@ function AddInCart() {
       categoryName: "Supreme Sandwiches",
     },
   ];
+
+  const token = sessionStorage.getItem("signature");
+  const [quantity, setQuantity] = useState(1);
+
+  const [food, setFood] = useState([]);
+  const [fooddetail, setfooddetail] = useState([]);
+  const [viewcart, setviewcart] = useState([]);
+  console.log(fooddetail)
+
+  const addtocart = {
+    _id: fooddetail._id,
+    unit: quantity,
+  };
+
+  console.log(addtocart)
+
+  const productPrice = fooddetail.price;
+
+  const handleDecrease = () => {
+    if (quantity > 1) {
+      setQuantity(quantity - 1);
+    }
+  };
+  const handleIncrease = () => {
+    setQuantity(quantity + 1);
+  };
+
+  const totalPrice = quantity * productPrice;
+
+  const addData = async (itemId, vendorId) => {
+    console.log(`${getFoodDetailAPI}/${vendorId}/${itemId}`);
+
+    console.log("Item ID:", itemId);
+    console.log("Vendor ID:", vendorId);
+
+    // You can perform any other actions with the data here
+
+    try {
+      const getfooddetail = await axios.get(`${getFoodDetailAPI}/${vendorId}/${itemId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await getfooddetail.data;
+      setfooddetail(data);
+      // console.log(getFoodsAPi.data);
+      // alert("successful");
+      // setStep(3)
+      // window.location.reload(false);
+    } catch (error) {
+      console.log(error);
+      // alert("invalid credentials");
+    }
+
+  };
+
+  const getFoods = async () => {
+    try {
+      const getFoodsAPi = await axios.get(`${getFoodAPI}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await getFoodsAPi.data;
+      setFood(data);
+      // console.log(getFoodsAPi.data);
+      // alert("successful");
+      // setStep(3)
+      // window.location.reload(false);
+    } catch (error) {
+      console.log(error);
+      // alert("invalid credentials");
+    }
+  };
+  const getCart = async () => {
+    try {
+      const viewcartAPI = await axios.get(`${getViewCart}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await viewcartAPI.data;
+      setviewcart(data);
+      // console.log(getFoodsAPi.data);
+      // alert("successful");
+      // setStep(3)
+      // window.location.reload(false);
+    } catch (error) {
+      console.log(error);
+      // alert("invalid credentials");
+    }
+  };
+
+  useEffect(() => {
+    getFoods();
+    getCart();
+  }, []);
+
+  const addCart = async (e) => {
+    e.preventDefault();
+    // console.log(addtocart);
+    try {
+      const addcartdata = await axios.post(`${addToCartAPI}`, addtocart, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(addcartdata.res);
+      // alert("successful");
+      setShow("");
+
+
+      // window.location.reload(false);
+    } catch (error) {
+      console.log(error);
+      alert("invalid credentials");
+    }
+  };
+
   return (
     <>
       <div className="container-fluid my-3 position-fixed">
@@ -175,271 +287,48 @@ function AddInCart() {
             </div>
             <hr />
             <div className="row">
-              <div className="col-lg-6 my-2">
-                <div className="row flex-row-reverse">
-                  <div className="col-lg-4 col-4 content-center">
-                    <div
-                      className="position-relative"
-                      data-bs-toggle="modal"
-                      data-bs-target="#exampleModal"
-                      style={{ cursor: "pointer" }}
-                    >
-                      <img
-                        src={require("../../img/burger.jpeg")}
-                        className="rounded img-fluid"
-                        alt=""
-                      />
-                      <div className="bg-white px-4 py-1 rounded shadow-sm offer-percent color position-absolute top-100 start-50 translate-middle">
-                        <span style={{ fontSize: "14px" }}>Add</span>
+              {food.map((data, index) => {
+                return (
+                  
+                    <div key={data.id} className="col-lg-6 my-2">
+                      <div className="row flex-row-reverse">
+                        <div className="col-lg-4 col-4 content-center">
+                          <div
+                            className="position-relative"
+                            data-bs-toggle="modal"
+                            data-bs-target="#exampleModal"
+                            style={{ cursor: "pointer" }}
+                          >
+                            <img
+                              src={require("../../img/burger.jpeg")}
+                              className="rounded img-fluid"
+                              alt=""
+                            />
+                            <div className="bg-white px-4 py-1 rounded shadow-sm offer-percent color position-absolute top-100 start-50 translate-middle">
+                              <span style={{ fontSize: "14px" }} onClick={()=>addData(data._id,data.vendorId)}>Add</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-lg-8 col-8">
+                          <div className="bi bi-dice-1 text-success"></div>
+                          <heading className="heading-2">{data.name}</heading>
+                          <div className="food-price">
+                            {" "}
+                            <i className="bi bi-currency-rupee"></i>{" "}
+                            {data.price}
+                          </div>
+                          <div style={{ fontSize: "small" }}>
+                            {data.description}{" "}
+                            <Link to="/" className="text-decoration-none color">
+                              More
+                            </Link>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="col-lg-8 col-8">
-                    <div className="bi bi-dice-1 text-success"></div>
-                    <heading className="heading-2">
-                      Chicken Keema Kulcha Burger
-                    </heading>
-                    <div className="food-price">
-                      {" "}
-                      <i className="bi bi-currency-rupee"></i> 650
-                    </div>
-                    <div style={{ fontSize: "small" }}>
-                      Lorem ipsum dolor sit amet consectetur . Perferendis{" "}
-                      <Link to="/" className="text-decoration-none color">
-                        More
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {/*  */}
-              <div className="col-lg-6 my-2">
-                <div className="row flex-row-reverse">
-                  <div className="col-lg-4 col-4 content-center">
-                    <div
-                      className="position-relative"
-                      data-bs-toggle="modal"
-                      data-bs-target="#exampleModal"
-                      style={{ cursor: "pointer" }}
-                    >
-                      <img
-                        src={require("../../img/burger.jpeg")}
-                        className="rounded img-fluid"
-                        alt=""
-                      />
-                      <div className="bg-white px-4 py-1 rounded shadow-sm offer-percent color position-absolute top-100 start-50 translate-middle">
-                        <span style={{ fontSize: "14px" }}>Add</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-lg-8 col-8">
-                    <div className="bi bi-dice-1 text-success"></div>
-                    <heading className="heading-2">
-                      Chicken Keema Kulcha Burger
-                    </heading>
-                    <div className="food-price">
-                      {" "}
-                      <i className="bi bi-currency-rupee"></i> 650
-                    </div>
-                    <div style={{ fontSize: "small" }}>
-                      Lorem ipsum dolor sit amet consectetur . Perferendis{" "}
-                      <Link to="/" className="text-decoration-none color">
-                        More
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {/*  */}
-              <div className="col-lg-6 my-2">
-                <div className="row flex-row-reverse">
-                  <div className="col-lg-4 col-4 content-center">
-                    <div
-                      className="position-relative"
-                      data-bs-toggle="modal"
-                      data-bs-target="#exampleModal"
-                      style={{ cursor: "pointer" }}
-                    >
-                      <img
-                        src={require("../../img/burger.jpeg")}
-                        className="rounded img-fluid"
-                        alt=""
-                      />
-                      <div className="bg-white px-4 py-1 rounded shadow-sm offer-percent color position-absolute top-100 start-50 translate-middle">
-                        <span style={{ fontSize: "14px" }}>Add</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-lg-8 col-8">
-                    <div className="bi bi-dice-1 text-success"></div>
-                    <heading className="heading-2">
-                      Chicken Keema Kulcha Burger
-                    </heading>
-                    <div className="food-price">
-                      {" "}
-                      <i className="bi bi-currency-rupee"></i> 650
-                    </div>
-                    <div style={{ fontSize: "small" }}>
-                      Lorem ipsum dolor sit amet consectetur . Perferendis{" "}
-                      <Link to="/" className="text-decoration-none color">
-                        More
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {/*  */}
-              <div className="col-lg-6 my-2">
-                <div className="row flex-row-reverse">
-                  <div className="col-lg-4 col-4 content-center">
-                    <div
-                      className="position-relative"
-                      data-bs-toggle="modal"
-                      data-bs-target="#exampleModal"
-                      style={{ cursor: "pointer" }}
-                    >
-                      <img
-                        src={require("../../img/burger.jpeg")}
-                        className="rounded img-fluid"
-                        alt=""
-                      />
-                      <div className="bg-white px-4 py-1 rounded shadow-sm offer-percent color position-absolute top-100 start-50 translate-middle">
-                        <span style={{ fontSize: "14px" }}>Add</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-lg-8 col-8">
-                    <div className="bi bi-dice-1 text-success"></div>
-                    <heading className="heading-2">
-                      Chicken Keema Kulcha Burger
-                    </heading>
-                    <div className="food-price">
-                      {" "}
-                      <i className="bi bi-currency-rupee"></i> 650
-                    </div>
-                    <div style={{ fontSize: "small" }}>
-                      Lorem ipsum dolor sit amet consectetur . Perferendis{" "}
-                      <Link to="/" className="text-decoration-none color">
-                        More
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {/*  */}
-              <div className="col-lg-6 my-2">
-                <div className="row flex-row-reverse">
-                  <div className="col-lg-4 col-4 content-center">
-                    <div
-                      className="position-relative"
-                      data-bs-toggle="modal"
-                      data-bs-target="#exampleModal"
-                      style={{ cursor: "pointer" }}
-                    >
-                      <img
-                        src={require("../../img/burger.jpeg")}
-                        className="rounded img-fluid"
-                        alt=""
-                      />
-                      <div className="bg-white px-4 py-1 rounded shadow-sm offer-percent color position-absolute top-100 start-50 translate-middle">
-                        <span style={{ fontSize: "14px" }}>Add</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-lg-8 col-8">
-                    <div className="bi bi-dice-1 text-success"></div>
-                    <heading className="heading-2">
-                      Chicken Keema Kulcha Burger
-                    </heading>
-                    <div className="food-price">
-                      {" "}
-                      <i className="bi bi-currency-rupee"></i> 650
-                    </div>
-                    <div style={{ fontSize: "small" }}>
-                      Lorem ipsum dolor sit amet consectetur . Perferendis{" "}
-                      <Link to="/" className="text-decoration-none color">
-                        More
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {/*  */}
-              <div className="col-lg-6 my-2">
-                <div className="row flex-row-reverse">
-                  <div className="col-lg-4 col-4 content-center">
-                    <div
-                      className="position-relative"
-                      data-bs-toggle="modal"
-                      data-bs-target="#exampleModal"
-                      style={{ cursor: "pointer" }}
-                    >
-                      <img
-                        src={require("../../img/burger.jpeg")}
-                        className="rounded img-fluid"
-                        alt=""
-                      />
-                      <div className="bg-white px-4 py-1 rounded shadow-sm offer-percent color position-absolute top-100 start-50 translate-middle">
-                        <span style={{ fontSize: "14px" }}>Add</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-lg-8 col-8">
-                    <div className="bi bi-dice-1 text-success"></div>
-                    <heading className="heading-2">
-                      Chicken Keema Kulcha Burger
-                    </heading>
-                    <div className="food-price">
-                      {" "}
-                      <i className="bi bi-currency-rupee"></i> 650
-                    </div>
-                    <div style={{ fontSize: "small" }}>
-                      Lorem ipsum dolor sit amet consectetur . Perferendis{" "}
-                      <Link to="/" className="text-decoration-none color">
-                        More
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-6 my-2">
-                <div className="row flex-row-reverse">
-                  <div className="col-lg-4 col-4 content-center">
-                    <div
-                      className="position-relative"
-                      data-bs-toggle="modal"
-                      data-bs-target="#exampleModal"
-                      style={{ cursor: "pointer" }}
-                    >
-                      <img
-                        src={require("../../img/burger.jpeg")}
-                        className="rounded img-fluid"
-                        alt=""
-                      />
-                      <div className="bg-white px-4 py-1 rounded shadow-sm offer-percent color position-absolute top-100 start-50 translate-middle">
-                        <span style={{ fontSize: "14px" }}>Add</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-lg-8 col-8">
-                    <div className="bi bi-dice-1 text-success"></div>
-                    <heading className="heading-2">
-                      Chicken Keema Kulcha Burger
-                    </heading>
-                    <div className="food-price">
-                      {" "}
-                      <i className="bi bi-currency-rupee"></i> 650
-                    </div>
-                    <div style={{ fontSize: "small" }}>
-                      Lorem ipsum dolor sit amet consectetur . Perferendis{" "}
-                      <Link to="/" className="text-decoration-none color">
-                        More
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+                );
+              })}
+            </div> 
           </div>
         </div>
       </div>
@@ -454,6 +343,7 @@ function AddInCart() {
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content">
             <div className="modal-body">
+              <div className="position-relative">
               <img
                 src={require("../../img/thepizaa.jpeg")}
                 className="rounded"
@@ -461,14 +351,22 @@ function AddInCart() {
                 height={"250"}
                 alt=""
               />
+              <i className="bi bi-x-circle text-white shadow position-absolute top-0 end-0 m-2" data-bs-dismiss="modal" style={{cursor:"pointer"}}></i>
+              </div>
               <div className="py-2">
                 {" "}
-                <div className="bi bi-dice-1 text-success"></div>
+                <div className="d-flex">
+                <div className={fooddetail.foodType == 'veg' ? "bi bi-dice-1 text-success mx-1" : "bi bi-dice-1 text-danger mx-1"}></div>{" "}
+                {fooddetail.foodType}
+                </div>
+               
+
                 <heading className="heading-2">
-                  Chicken Keema Kulcha Burger
+                  {fooddetail.name}
                 </heading>
                 <div style={{ fontSize: "small" }}>
-                  Lorem ipsum dolor sit amet consectetur . Perferendis{" "}
+                {fooddetail.description}{" "}
+                
                 </div>
               </div>
             </div>
@@ -485,7 +383,7 @@ function AddInCart() {
               <div className="d-flex justify-content-between AddItems-btn px-3">
                 <div
                   className="fw-bold"
-                  onClick={next}
+                  onClick={addCart}
                   data-bs-dismiss="modal"
                   style={{ cursor: "pointer" }}
                 >
@@ -503,24 +401,24 @@ function AddInCart() {
       {/* next button */}
       <div className="container">
         <div className="row justify-content-center">
-        <div className="col-lg-12 col-12 position-absolute bottom-0 start-50 translate-middle-x my-2">
-        <div
-        className={`d-flex justify-content-between AddItems-btn px-3 py-3 ${hide}`}
-      >
-        <div className="fw-bold">
-          1 item |<i className="bi bi-currency-rupee"></i>
-          {totalPrice}
-        </div>{" "}
-        <div>
-          <Link
-            to={"/placeOrder"}
-            className="fw-bold text-white text-decoration-none"
-          >
-            Next
-          </Link>
-        </div>
-      </div>
-        </div>
+          <div className="col-lg-12 col-12 position-absolute bottom-0 start-50 translate-middle-x my-2">
+            <div
+              className={`d-flex justify-content-between AddItems-btn px-3 py-3 ${hide}`}
+            >
+              <div className="fw-bold">
+                {quantity} item |<i className="bi bi-currency-rupee"></i>
+                {totalPrice}
+              </div>{" "}
+              <div>
+                <Link
+                  to={"/placeOrder"}
+                  className="fw-bold text-white text-decoration-none"
+                >
+                  Next
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       {/* 2nd modal for mobile category*/}
@@ -589,5 +487,5 @@ function AddInCart() {
       </div>
     </>
   );
-}
+          }
 export default AddInCart;

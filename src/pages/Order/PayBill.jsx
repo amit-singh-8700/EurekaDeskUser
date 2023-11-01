@@ -2,10 +2,28 @@ import React from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import BottomMenu from "../Home/BottomMenu";
-
+import Razorpay from "razorpay";
 
 function PayBill() {
-  
+  const [payment, setPayment] = useState(null);
+
+  const options = {
+    key: "rzp_test_sANCigiSLRL13y",
+    amount: 100, // Amount in paise (e.g., 10000 paise = ₹100)
+    name: "Your Company",
+    description: "Purchase Description",
+    // image: "/your_logo.png", // Add your company logo image URL
+    handler: function (response) {
+      setPayment(response);
+    },
+    prefill: {
+      name: "John Doe",
+      email: "johndoe@example.com",
+      contact: "1234567890",
+    },
+  };
+
+  const razorpay = new Razorpay(options);
   return (
     <>
       <div className="container position-relative">
@@ -123,7 +141,14 @@ function PayBill() {
                   </div>{" "}
                   <div>
                     {" "}
-                    Pay Bill
+                    <button onClick={() => razorpay.open()}>Pay Bill</button>
+                    {payment && (
+                      // Display a success message when the payment is successful
+                      <p>
+                        Payment successful! Payment ID:{" "}
+                        {payment.razorpay_payment_id}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -135,7 +160,6 @@ function PayBill() {
       <BottomMenu />
       {/* number verification */}
       {/* modal */}
-      
     </>
   );
 }

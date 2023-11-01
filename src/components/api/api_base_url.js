@@ -1,11 +1,11 @@
-export const baseUrl = "http://localhost:8000/";
+export const baseUrl = "https://eureka-desk.onrender.com/";
 export const login = `${baseUrl + "customer/signup"}`;
 export const verifyOTPAPI = `${baseUrl + "customer/verify"}`;
 export const resendOTPAPI = `${baseUrl + "customer/otp"}`;
 export const ProfileAPI = `${baseUrl + "customer/profile/"}`;
 export const editProfileAPI = `${baseUrl + "customer/profile"}`;
-export const getCategoryAPI = `${baseUrl + "categories" + "/65337b478373e52928fe1787"}`;
-export const getFoodAPI = `${baseUrl + "foods" + "/65337b478373e52928fe1787"}`;
+export const getCategoryAPI = `${baseUrl + "categories" + "/653f4a1fae4e6831c89dfdd5"}`;
+export const getFoodAPI = `${baseUrl + "foods" + "/653f4a1fae4e6831c89dfdd5"}`;
 export const addToCartAPI = `${baseUrl + "customer/cart/"}`;
 export const getFoodDetailAPI = `${baseUrl + "foods"}`;
 export const getViewCart = `${baseUrl + "customer/cart"}`;

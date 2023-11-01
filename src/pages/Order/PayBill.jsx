@@ -2,28 +2,56 @@ import React from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import BottomMenu from "../Home/BottomMenu";
-import Razorpay from "razorpay";
+// import Razorpay from 'razorpay';
+import { CreatePaymentAPI } from "../../components/api/api_base_url";
+
 
 function PayBill() {
-  const [payment, setPayment] = useState(null);
+  // const [paymentId, setPaymentId] = useState(null);
+  // const token = sessionStorage.getItem("signature");
+  // const [amount, setamount] = useState([]);
+  // const [paymentMode, setpaymentMode] = useState([]);
 
-  const options = {
-    key: "rzp_test_sANCigiSLRL13y",
-    amount: 100, // Amount in paise (e.g., 10000 paise = ₹100)
-    name: "Your Company",
-    description: "Purchase Description",
-    // image: "/your_logo.png", // Add your company logo image URL
-    handler: function (response) {
-      setPayment(response);
-    },
-    prefill: {
-      name: "John Doe",
-      email: "johndoe@example.com",
-      contact: "1234567890",
-    },
-  };
+  // const createpayment = {
+  //   amount: amount,
+  //   paymentMode: paymentMode,
+  // }
 
-  const razorpay = new Razorpay(options);
+  // handleClick = async (e) => {
+  //   e.preventDefault();
+
+  //   try {
+  //    const Paymentdata = await axios.post(CreatePaymentAPI, createpayment, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+  //     alert("Successful");
+  //     // window.location.reload(false);
+  //   } catch (error) {
+  //     console.error(error);
+  //     alert("API request failed");
+  //   }
+  // }
+
+  // const razorpayOptions = {
+  //   key_id: 'rzp_test_sANCigiSLRL13y',
+  //   amount: 5000, // The amount in paisa (e.g., 10000 paisa = 100 INR)
+  //   currency: "INR",
+  //   name: 'Eureka',
+  //   description: 'Purchase Description',
+  //   order_id: "order_MvAegWzfC3iTG4", // Set this to null initially
+  //   handler: (response) => {
+  //     alert(response.razorpay_payment_id);
+  //   },
+  // };
+
+  // const openRazorpay = () => {
+  //   const rzp = new Razorpay(razorpayOptions);
+  //   rzp.open();
+  // };
+
   return (
     <>
       <div className="container position-relative">
@@ -141,14 +169,9 @@ function PayBill() {
                   </div>{" "}
                   <div>
                     {" "}
-                    <button onClick={() => razorpay.open()}>Pay Bill</button>
-                    {payment && (
-                      // Display a success message when the payment is successful
-                      <p>
-                        Payment successful! Payment ID:{" "}
-                        {payment.razorpay_payment_id}
-                      </p>
-                    )}
+                    <button 
+                    // onClick={openRazorpay}
+                    >Pay Bill</button>
                   </div>
                 </div>
               </div>
@@ -162,6 +185,6 @@ function PayBill() {
       {/* modal */}
     </>
   );
-}
+  }
 
 export default PayBill;

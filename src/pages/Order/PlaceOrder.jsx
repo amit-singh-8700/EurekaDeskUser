@@ -11,8 +11,10 @@ import {
 } from "../../components/api/api_base_url";
 
 function PlaceOrder() {
+  const [viewcart, setviewcart] = useState([]);
   const [quantity, setQuantity] = useState(1);
   const productPrice = 500;
+  console.log(viewcart.food)
 
   const history = useNavigate();
 
@@ -30,7 +32,6 @@ function PlaceOrder() {
   const [step, setStep] = useState(1);
   const [phone, setphone] = useState([]);
   const [otp, setOtp] = useState([]);
-  const [viewcart, setviewcart] = useState([]);
 
   const sinup = {
     phone: phone,
@@ -54,7 +55,7 @@ function PlaceOrder() {
       setStep(2);
 
       // window.location.reload(false);
-    } catch (error) { 
+    } catch (error) {
       console.log(error);
       alert("invalid credentials");
     }
@@ -119,6 +120,7 @@ function PlaceOrder() {
     }
   };
 
+  console.log(viewcart)
   useEffect(() => {
     getCart();
   }, []);
@@ -128,111 +130,41 @@ function PlaceOrder() {
       <div className="container position-relative">
         <div className="row justify-content-center">
           <div className="col-lg-7 my-2 shadow-sm rounded">
-            {/* {viewcart.map((data, index) => {
-                return (
-                  
-                      <div  key={data.id} className="row flex-row-reverse">
-              <div className="col-lg-4 col-4 content-center">
-                <div>
-                  <div className="qty-btn-cover py-1">
-                    <button onClick={handleDecrease} className="qty-btn">
-                      -
-                    </button>
-                    <span>{quantity}</span>   
-                    <button onClick={handleIncrease} className="qty-btn">
-                      +
-                    </button>
+            {viewcart.map((data, index) => {
+              return (
+                <div key={data.id} className="row flex-row-reverse">
+                  <div className="col-lg-4 col-4 content-center">
+                    <div>
+                      <div className="qty-btn-cover py-1">
+                        <button onClick={handleDecrease} className="qty-btn">
+                          -
+                        </button>
+                        <span>{data.quantity}</span>
+                        <button onClick={handleIncrease} className="qty-btn">
+                          +
+                        </button>
+                      </div>
+                      <div className="food-price">
+                        {" "}
+                        <i className="bi bi-currency-rupee"></i> {data.food.price}
+                      </div>
+                    </div>
                   </div>
-                  <div className="food-price">
-                    {" "}
-                    <i className="bi bi-currency-rupee"></i> {totalPrice}
+                  <div className="col-lg-8 col-8">
+                    <div className="bi bi-dice-1 text-success"></div>
+                    <heading className="heading-2">{data.food.name}</heading>
+                    <div>
+                      <h6>
+                        <Link to="/" className="color text-decoration-none">
+                          Edit
+                        </Link>
+                      </h6>
+                    </div>
                   </div>
+                  <hr />
                 </div>
-              </div>
-              <div className="col-lg-8 col-8">
-                <div className="bi bi-dice-1 text-success"></div>
-                <heading className="heading-2">
-                  Chicken Keema Kulcha Burger
-                </heading>
-                <div>
-                  <h6>
-                    <Link to="/" className="color text-decoration-none">
-                      Edit
-                    </Link>
-                  </h6>
-                </div>
-              </div>
-              <hr />
-            </div>
-                );
-              })} */}
-
-            <div className="row flex-row-reverse">
-              <div className="col-lg-4 col-4 content-center">
-                <div>
-                  <div className="qty-btn-cover py-1">
-                    <button onClick={handleDecrease} className="qty-btn">
-                      -
-                    </button>
-                    <span>{quantity}</span>
-                    <button onClick={handleIncrease} className="qty-btn">
-                      +
-                    </button>
-                  </div>
-                  <div className="food-price">
-                    {" "}
-                    <i className="bi bi-currency-rupee"></i> {totalPrice}
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-8 col-8">
-                <div className="bi bi-dice-1 text-success"></div>
-                <heading className="heading-2">
-                  Chicken Keema Kulcha Burger
-                </heading>
-                <div>
-                  <h6>
-                    <Link to="/" className="color text-decoration-none">
-                      Edit
-                    </Link>
-                  </h6>
-                </div>
-              </div>
-              <hr />
-            </div>
-            <div className="row flex-row-reverse">
-              <div className="col-lg-4 col-4 content-center">
-                <div>
-                  <div className="qty-btn-cover py-1">
-                    <button onClick={handleDecrease} className="qty-btn">
-                      -
-                    </button>
-                    <span>{quantity}</span>
-                    <button onClick={handleIncrease} className="qty-btn">
-                      +
-                    </button>
-                  </div>
-                  <div className="food-price">
-                    {" "}
-                    <i className="bi bi-currency-rupee"></i> {totalPrice}
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-8 col-8">
-                <div className="bi bi-dice-1 text-success"></div>
-                <heading className="heading-2">
-                  Chicken Keema Kulcha Burger
-                </heading>
-                <div>
-                  <h6>
-                    <Link to="/" className="color text-decoration-none">
-                      Edit
-                    </Link>
-                  </h6>
-                </div>
-              </div>
-              <hr />
-            </div>
+              );
+            })}
             {/* text area */}
             <textarea
               name=""

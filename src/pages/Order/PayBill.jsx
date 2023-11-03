@@ -2,55 +2,105 @@ import React from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import BottomMenu from "../Home/BottomMenu";
-// import Razorpay from 'razorpay';
-import { CreatePaymentAPI } from "../../components/api/api_base_url";
+import axios from "axios";
+import { CreatePaymentAPI, VerifyPaymentApi } from "../../components/api/api_base_url";
 
 
 function PayBill() {
-  // const [paymentId, setPaymentId] = useState(null);
-  // const token = sessionStorage.getItem("signature");
-  // const [amount, setamount] = useState([]);
-  // const [paymentMode, setpaymentMode] = useState([]);
+  const [paymentId, setPaymentId] = useState(null);
+  const token = sessionStorage.getItem("signature");
+  const [amount, setamount] = useState([]);
+  const [paymentMode, setpaymentMode] = useState([]);
 
   // const createpayment = {
   //   amount: amount,
   //   paymentMode: paymentMode,
   // }
 
-  // handleClick = async (e) => {
-  //   e.preventDefault();
+  const paymentData = {
+    amount: 1,
+    paymentMode: "cod",
+    offerId: ""
+  };
 
-  //   try {
-  //    const Paymentdata = await axios.post(CreatePaymentAPI, createpayment, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //         "Content-Type": "application/json",
-  //       },
-  //     });
-  //     alert("Successful");
-  //     // window.location.reload(false);
-  //   } catch (error) {
-  //     console.error(error);
-  //     alert("API request failed");
-  //   }
-  // }
+  function loadScript(src) {
+      return new Promise((resolve) => {
+          const script = document.createElement("script");
+          script.src = src;
+          script.onload = () => {
+              resolve(true);
+          };
+          script.onerror = () => {
+              resolve(false);
+          };
+          document.body.appendChild(script);
+      });
+  }
 
-  // const razorpayOptions = {
-  //   key_id: 'rzp_test_sANCigiSLRL13y',
-  //   amount: 5000, // The amount in paisa (e.g., 10000 paisa = 100 INR)
-  //   currency: "INR",
-  //   name: 'Eureka',
-  //   description: 'Purchase Description',
-  //   order_id: "order_MvAegWzfC3iTG4", // Set this to null initially
-  //   handler: (response) => {
-  //     alert(response.razorpay_payment_id);
-  //   },
-  // };
+  async function displayRazorpay() {
+    const res = await loadScript(
+        "https://checkout.razorpay.com/v1/checkout.js"
+    );
 
-  // const openRazorpay = () => {
-  //   const rzp = new Razorpay(razorpayOptions);
-  //   rzp.open();
-  // };
+    if (!res) {
+        alert("Razorpay SDK failed to load. Are you online?");
+        return;
+    }
+
+    const result = await axios.post(CreatePaymentAPI, paymentData, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
+          console.log("Entering displayRazorpay");
+
+    if (!result) {
+        alert("Server error. Are you online?");
+        return;
+    }
+    const data = await result.data
+    console.log(data)
+    const { amount, id: order_id, currency } = data;
+
+    console.log(amount)
+
+    const options = {
+        key: "rzp_test_sANCigiSLRL13y", // Enter the Key ID generated from the Dashboard
+        amount: amount,
+        currency: currency,
+        name: "Soumya Corp.",
+        description: "Test Transaction",
+        order_id: order_id,
+        handler: async function (response) {
+            const data = {
+                orderCreationId: order_id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpayOrderId: response.razorpay_order_id,
+                razorpaySignature: response.razorpay_signature,
+            };
+
+            const result = await axios.post(VerifyPaymentApi, data);
+            console.log(data)
+
+            alert(result.data.msg);
+        },
+        prefill: {
+            name: "Pushpendra kumar",
+            email: "kumar@example.com",
+            contact: "9729470221",
+        },
+        notes: {
+            address: "Corporate Office",
+        },
+        theme: {
+            color: "#61dafb",
+        },
+    };
+
+    const paymentObject = new window.Razorpay(options);
+    paymentObject.open();
+}
 
   return (
     <>
@@ -169,9 +219,7 @@ function PayBill() {
                   </div>{" "}
                   <div>
                     {" "}
-                    <button 
-                    // onClick={openRazorpay}
-                    >Pay Bill</button>
+                    <button className="btn text-white" onClick={displayRazorpay}>Pay Bill</button>
                   </div>
                 </div>
               </div>

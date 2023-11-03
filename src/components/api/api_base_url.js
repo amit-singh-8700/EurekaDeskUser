@@ -10,3 +10,4 @@ export const addToCartAPI = `${baseUrl + "customer/cart/"}`;
 export const getFoodDetailAPI = `${baseUrl + "foods"}`;
 export const getViewCart = `${baseUrl + "customer/cart"}`;
 export const CreatePaymentAPI = `${baseUrl + "customer/create-payment"}`;
+export const VerifyPaymentApi = `${baseUrl + "customer/verify-payment"}`;

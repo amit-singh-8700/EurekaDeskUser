@@ -1,9 +1,8 @@
-import React from "react";
-import { useState } from "react";
+import { React, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import BottomMenu from "../Home/BottomMenu";
 import axios from "axios";
-import { CreatePaymentAPI, VerifyPaymentApi } from "../../components/api/api_base_url";
+import { CreatePaymentAPI, VerifyPaymentApi, getViewCart } from "../../components/api/api_base_url";
 
 
 function PayBill() {
@@ -11,14 +10,28 @@ function PayBill() {
   const token = sessionStorage.getItem("signature");
   const [amount, setamount] = useState([]);
   const [paymentMode, setpaymentMode] = useState([]);
+  const [viewcart, setviewcart] = useState([]);
+  const [totalPrices, setTotalPrice] = useState(0);
+
 
   // const createpayment = {
   //   amount: amount,
   //   paymentMode: paymentMode,
   // }
+  const calculateTotalPrice = () => {
+    let totalPrice = 0;
+    viewcart.forEach((item) => {
+      totalPrice += item.food.price * item.quantity;
+    });
+    return totalPrice;
+  };
+  
+  useEffect(() => {
+    setTotalPrice(calculateTotalPrice());
+  }, [viewcart]);
 
   const paymentData = {
-    amount: 1,
+    amount: 1000,
     paymentMode: "cod",
     offerId: ""
   };
@@ -102,25 +115,53 @@ function PayBill() {
     paymentObject.open();
 }
 
+const getCart = async () => {
+  try {
+    const viewcartAPI = await axios.get(`${getViewCart}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await viewcartAPI.data;
+    setviewcart(data);
+    // console.log(getFoodsAPi.data);
+    // alert("successful");
+    // setStep(3)
+    // window.location.reload(false);
+  } catch (error) {
+    console.log(error);
+    // alert("invalid credentials");
+  }
+};
+
+useEffect(() => {
+  getCart();
+}, []);
+
+
+
   return (
     <>
       <div className="container position-relative">
         <div className="row justify-content-center">
           <div className="col-lg-6 my-2 shadow-sm">
             <h4 className="py-3">Orders</h4>
-            <div className="row flex-row-reverse">
+            {viewcart.map((data, index) => {
+              return (
+                <div key={data.id} className="row flex-row-reverse">
               <div className="col-lg-4 col-4 content-center">
                 <div>
                   <div className="food-price">
                     {" "}
-                    <i className="bi bi-currency-rupee"></i> {"650"}
+                    <i className="bi bi-currency-rupee"></i> {data.food.price}
                   </div>
                 </div>
               </div>
               <div className="col-lg-8 col-8">
                 <div className="bi bi-dice-1 text-success"></div>
                 <heading className="heading-2">
-                  Chicken Keema Kulcha Burger
+                  {data.food.name}
                 </heading>
                 <div>
                   <h6>
@@ -132,54 +173,8 @@ function PayBill() {
               </div>
               <hr />
             </div>
-            <div className="row flex-row-reverse">
-              <div className="col-lg-4 col-4 content-center">
-                <div>
-                  <div className="food-price">
-                    {" "}
-                    <i className="bi bi-currency-rupee"></i> {"650"}
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-8 col-8">
-                <div className="bi bi-dice-1 text-success"></div>
-                <heading className="heading-2">
-                  Chicken Keema Kulcha Burger
-                </heading>
-                <div>
-                  <h6>
-                    <Link to="/" className="color text-decoration-none">
-                      Repeat
-                    </Link>
-                  </h6>
-                </div>
-              </div>
-              <hr />
-            </div>
-            <div className="row flex-row-reverse">
-              <div className="col-lg-4 col-4 content-center">
-                <div>
-                  <div className="food-price">
-                    {" "}
-                    <i className="bi bi-currency-rupee"></i> {"650"}
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-8 col-8">
-                <div className="bi bi-dice-1 text-success"></div>
-                <heading className="heading-2">
-                  Chicken Keema Kulcha Burger
-                </heading>
-                <div>
-                  <h6>
-                    <Link to="/" className="color text-decoration-none">
-                      Repeat
-                    </Link>
-                  </h6>
-                </div>
-              </div>
-              <hr />
-            </div>
+              );
+            })}
             {/* Bill details */}
             <div className="row my-3 shadow-sm">
               <div className="col-lg-12 py-2">
@@ -187,7 +182,7 @@ function PayBill() {
                 <div className="d-flex justify-content-between">
                   <span>Item Total </span>
                   <span>
-                    <i className="bi bi-currency-rupee"></i>650
+                    <i className="bi bi-currency-rupee"></i>{totalPrices}
                   </span>
                 </div>
                 <div className="d-flex justify-content-between">
@@ -206,7 +201,7 @@ function PayBill() {
                 <div className="d-flex justify-content-between">
                   <span className="fw-bold">To Pay</span>
                   <span className="fw-bold">
-                    <i className="bi bi-currency-rupee"></i>650
+                    <i className="bi bi-currency-rupee"></i>{totalPrices}
                   </span>
                 </div>
                 .
@@ -214,8 +209,8 @@ function PayBill() {
                   className={`d-flex justify-content-between AddItems-btn px-3 py-3 shadow mb-5`}
                 >
                   <div className="fw-bold">
-                    1 item |<i className="bi bi-currency-rupee"></i>
-                    {"500"}
+                  {viewcart.length} item |<i className="bi bi-currency-rupee"></i>
+                    {totalPrices}
                   </div>{" "}
                   <div>
                     {" "}

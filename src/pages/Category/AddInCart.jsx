@@ -1,9 +1,9 @@
 import { React, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./AddInCart.css";
 import Header from "../../components/header/Header";
 import axios from "axios";
-import { addToCartAPI, getFoodAPI, getFoodDetailAPI, getViewCart } from "../../components/api/api_base_url";
+import { addToCartAPI, getFoodAPI, getFoodDetailAPI, getViewCart, login, resendOTPAPI, verifyOTPAPI } from "../../components/api/api_base_url";
 import { useEffect } from "react";
 // import { getFoodDetailAPI } from "../../components/api/api_base_url";
 
@@ -95,11 +95,24 @@ function AddInCart() {
   const [food, setFood] = useState([]);
   const [fooddetail, setfooddetail] = useState([]);
   const [viewcart, setviewcart] = useState([]);
+  const [step, setStep] = useState(1);
+  const [phone, setphone] = useState([]);
+  const [otp, setOtp] = useState([]);
+  const history = useNavigate();
   console.log(fooddetail)
 
   const addtocart = {
     _id: fooddetail._id,
     unit: quantity,
+  };
+
+  const sinup = {
+    phone: phone,
+  };
+
+  const verifyotp = {
+    phone: phone,
+    otp: otp,
   };
 
   console.log(addtocart)
@@ -211,6 +224,58 @@ function AddInCart() {
     }
   };
 
+  const handleClick = async () => {
+    try {
+      await axios.post(`${login}`, sinup);
+
+      alert("registration successful");
+      setStep(2);
+
+      // window.location.reload(false);
+    } catch (error) {
+      console.log(error);
+      alert("invalid credentials");
+    }
+  };
+
+  const verify = async () => {
+    try {
+      const api = await axios.patch(`${verifyOTPAPI}`, verifyotp, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await api.data;
+      sessionStorage.setItem("signature", data.signature);
+
+      alert("registration successful");
+      setStep(2);
+      history("/placeOrder");
+      window.location.reload(false);
+    } catch (error) {
+      console.log(error);
+      alert("invalid credentials");
+    }
+  };
+
+  const reotp = async () => {
+    try {
+      await axios.get(`${resendOTPAPI}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      alert("Otp   successful");
+      // setStep(3)
+      // window.location.reload(false);
+    } catch (error) {
+      console.log(error);
+      alert("invalid credentials");
+    }
+  };
+
   return (
     <>
       <div className="container-fluid my-3 position-fixed">
@@ -300,7 +365,7 @@ function AddInCart() {
                             style={{ cursor: "pointer" }}
                           >
                             <img
-                              src={require("../../img/burger.jpeg")}
+                              src={data.images == null ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMgPtF8x4lhf4oH0rSo-mEMnTMGcUZhXmXvg&usqp=CAU" : `https://eureka-desk.onrender.com/images/${data.images}`}
                               className="rounded img-fluid"
                               alt=""
                             />
@@ -345,7 +410,7 @@ function AddInCart() {
             <div className="modal-body">
               <div className="position-relative">
               <img
-                src={require("../../img/thepizaa.jpeg")}
+                src={fooddetail.images == null ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMgPtF8x4lhf4oH0rSo-mEMnTMGcUZhXmXvg&usqp=CAU" : `https://eureka-desk.onrender.com/images/${fooddetail.images}`}
                 className="rounded"
                 width={"100%"}
                 height={"250"}
@@ -410,12 +475,24 @@ function AddInCart() {
                 {totalPrice}
               </div>{" "}
               <div>
-                <Link
-                  to={"/placeOrder"}
-                  className="fw-bold text-white text-decoration-none"
-                >
-                  Next
-                </Link>
+              {token ? (
+                  <Link
+                    to="/placeOrder"
+                    style={{ cursor: "pointer" }}
+                    className="fw-bold text-white text-decoration-none"
+                  >
+                    Next
+                  </Link>
+                ) : (
+                  <Link
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModal3"
+                    style={{ cursor: "pointer" }}
+                    className="fw-bold text-white text-decoration-none"
+                  >
+                    Next
+                  </Link>
+                )}
               </div>
             </div>
           </div>
@@ -481,6 +558,89 @@ function AddInCart() {
                <div >Recommended</div>
               </div>
             </div> */}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        className="modal fade"
+        id="exampleModal3"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-body">
+              {step === 1 && (
+                <div>
+                  <div className="d-flex justify-content-between">
+                    <h6>Almost There</h6>
+                    <div data-bs-dismiss="modal">
+                      <i className="bi bi-x" style={{ cursor: "pointer" }}></i>
+                    </div>
+                  </div>
+                  <p style={{ font: "small" }}>
+                    Enter your name and mobile number to place order
+                  </p>
+                  <input
+                    type="phone"
+                    className="form-control my-3 py-2 border"
+                    placeholder="Phone Number"
+                    value={phone}
+                    onChange={(e) => setphone(e.target.value)}
+                  />
+                  {/* <Link to="/paymentMode" className="text-decoration-none"> */}
+                  <div
+                    className={`AddItems-btn text-center px-3 py-2 fw-bold`}
+                    style={{ cursor: "pointer" }}
+                    onClick={handleClick}
+                  >
+                    Send Otp
+                  </div>
+                  {/* </Link> */}
+                </div>
+              )}
+              {step === 2 && (
+                <div>
+                  <div className="d-flex justify-content-between">
+                    <button
+                      className="btn btn-sm btn-scondary border"
+                      onClick={() => setStep(1)}
+                    >
+                      Back
+                    </button>
+                    <h6>verify opt</h6>
+                    <div data-bs-dismiss="modal">
+                      <i className="bi bi-x" style={{ cursor: "pointer" }}></i>
+                    </div>
+                  </div>
+                  <input
+                    type="number"
+                    className="form-control my-3 py-2 border"
+                    placeholder="enter otp"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                  />
+
+                  <button
+                    className="border-0 bg-white text-success"
+                    onClick={reotp}
+                  >
+                    {" "}
+                    <h6>Resend</h6>
+                  </button>
+
+                  <div
+                    className={`AddItems-btn text-center px-3 py-2 fw-bold`}
+                    style={{ cursor: "pointer" }}
+                    onClick={verify}
+                    // data-bs-dismiss="modal"
+                  >
+                    Verify
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

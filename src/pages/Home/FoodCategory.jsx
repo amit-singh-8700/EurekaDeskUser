@@ -43,10 +43,10 @@ function FoodCategory() {
             <Link to={"/AddInCart"}>
               {" "}
               <img
-                src={require("../../img/pizaa.png")}
-                className="img-rounded"
+                src={data.images == null ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMgPtF8x4lhf4oH0rSo-mEMnTMGcUZhXmXvg&usqp=CAU" : `https://eureka-desk.onrender.com/images/${data.images}`}
+                className="rounded"
                 width={"100%"}
-                height={"auto"}
+                height={"150px"}
                 alt=""
               />
             </Link>

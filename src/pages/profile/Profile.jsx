@@ -3,6 +3,7 @@ import Header from '../../components/header/Header'
 import { ProfileAPI, editProfileAPI } from '../../components/api/api_base_url';
 import axios from 'axios';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 function Profile() {
   const token = sessionStorage.getItem("signature");
@@ -17,7 +18,9 @@ function Profile() {
     lastname: lastname,
     address: address
   }
-
+  const  removeTkoen = ()=>{
+    const token = sessionStorage.removeItem("signature");
+  }
 
   const profilefunc = async () => {
     try {
@@ -180,10 +183,13 @@ function Profile() {
             <div className="col-lg-6">Lng</div>
             <div className="col-lg-6">{profile.lng}</div>
         </div>
-        {/* <div className="row">
-            <div className="col-lg-6">Cart</div>
-            <div className="col-lg-6">{profile.cart[0]}</div>
-        </div> */}
+        <div className="row">
+          <div className="col-lg-11 border-0 my-2">
+          <Link to="/"><button className="AddItems-btn border-0 text-center px-3 py-1 fw-bold" onClick={removeTkoen}>Log Out</button></Link>
+          </div>
+        </div>
+        
+        
        
     </div>
     </>

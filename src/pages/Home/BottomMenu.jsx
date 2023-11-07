@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 function BottomMenu() {
   const  removeTkoen = ()=>{
@@ -13,14 +14,15 @@ function BottomMenu() {
         <div className="fw-bold content-center">
           <div>
             {" "}
-            <i className="bi bi-menu-down"></i> {"Menu"}
+            <Link className="text-black text-decoration-none" to="/addInCart"><i className="bi bi-menu-down"></i> {"Menu"}</Link>
+            
           </div>
         </div>{" "}
         <div>|</div>
         <div className="fw-bold">
           <div className="content-center">
-            <i className="bi bi-bag-check"></i> Order 
-            <button className="btn" onClick={removeTkoen}>remove button</button>
+            <Link className="text-black text-decoration-none" to="/PlaceOrder"><i className="bi bi-bag-check"></i> Order </Link>
+            
 
           </div>
         </div>

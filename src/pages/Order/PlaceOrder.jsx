@@ -11,16 +11,23 @@ import {
 } from "../../components/api/api_base_url";
 
 function PlaceOrder() {
+  const [step, setStep] = useState(1);
   const [viewcart, setviewcart] = useState([]);
+
   const history = useNavigate();
 
-  const handleDecrease = (quantity) => {
-    if (quantity > 1) {
-        return quantity - 1;
+  const handleDecrease = (index) => {
+    const updatedViewCart = [...viewcart];
+    if (updatedViewCart[index].quantity > 1) {
+      updatedViewCart[index].quantity--;
+      setviewcart(updatedViewCart);
     }
   };
-  const handleIncrease = (quantity) => {
-   return  quantity + 1;
+
+  const handleIncrease = (index) => {
+    const updatedViewCart = [...viewcart];
+    updatedViewCart[index].quantity++;
+    setviewcart(updatedViewCart);
   };
 
   const token = sessionStorage.getItem("signature");
@@ -28,7 +35,6 @@ function PlaceOrder() {
   // const [phone, setphone] = useState([]);
   // const [otp, setOtp] = useState([]);
   const [totalPrices, setTotalPrice] = useState(0);
-
 
   // const sinup = {
   //   phone: phone,
@@ -115,18 +121,17 @@ function PlaceOrder() {
     getCart();
   }, []);
 
+  const calculateTotalPrice = () => {
+    let totalPrice = 0;
+    viewcart.forEach((item) => {
+      totalPrice += item.food.price * item.quantity;
+    });
+    return totalPrice;
+  };
 
-    const calculateTotalPrice = () => {
-      let totalPrice = 0;
-      viewcart.forEach((item) => {
-        totalPrice += item.food.price * item.quantity;
-      });
-      return totalPrice;
-    };
-  
-    useEffect(() => {
-      setTotalPrice(calculateTotalPrice());
-    }, [viewcart]);
+  useEffect(() => {
+    setTotalPrice(calculateTotalPrice());
+  }, [viewcart]);
 
   return (
     <>
@@ -139,21 +144,26 @@ function PlaceOrder() {
                   <div className="col-lg-4 col-4 content-center">
                     <div>
                       <div className="qty-btn-cover py-1">
-                        <button 
-                        // onClick={handleDecrease} 
-                        className="qty-btn" onClick={() => handleDecrease(data.quantity)}>
+                        <button
+                          // onClick={handleDecrease}
+                          className="qty-btn"
+                          onClick={() => handleDecrease(index)}
+                        >
                           -
                         </button>
                         <span>{data.quantity}</span>
                         <button
-                        //  onClick={handleIncrease} 
-                        className="qty-btn" onClick={()=>handleIncrease(data.quantity)}>
+                          //  onClick={handleIncrease}
+                          className="qty-btn"
+                          onClick={() => handleIncrease(index)}
+                        >
                           +
                         </button>
                       </div>
                       <div className="food-price">
                         {" "}
-                        <i className="bi bi-currency-rupee"></i> {data.food.price}
+                        <i className="bi bi-currency-rupee"></i>{" "}
+                        {data.food.price}
                       </div>
                     </div>
                   </div>
@@ -195,25 +205,88 @@ function PlaceOrder() {
                 {totalPrices}
               </div>{" "}
               <div>
-                {token ? (
-                  <Link
-                    to="/payBill"
-                    style={{ cursor: "pointer" }}
-                    className="fw-bold text-white text-decoration-none"
-                  >
-                    Place Order
-                  </Link>
-                ) : (
-                  <Link
-                    data-bs-toggle="modal"
-                    data-bs-target="#exampleModal"
-                    style={{ cursor: "pointer" }}
-                    className="fw-bold text-white text-decoration-none"
-                  >
-                    Place Order
-                  </Link>
-                )}
+                <Link
+                  data-bs-toggle="modal"
+                  data-bs-target="#exampleModal"
+                  style={{ cursor: "pointer" }}
+                  className="fw-bold text-white text-decoration-none"
+                >
+                  Place Order
+                </Link>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        className="modal fade"
+        id="exampleModal"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-body">
+              {step === 1 && (
+                <div>
+                  <div className="d-flex justify-content-between">
+                    <h5>Address</h5>
+                    <div data-bs-dismiss="modal">
+                      <i className="bi bi-x" style={{ cursor: "pointer" }}></i>
+                    </div>
+                  </div>
+                  <p style={{ font: "small" }}>
+                    Full Name
+                  </p>
+                  <input
+                    type="text"
+                    className="form-control my-3 py-2 border"
+                    placeholder="Full Name"
+                  />
+                  <p style={{ font: "small" }}>
+                    address
+                  </p>
+                  <input
+                    type="text"
+                    className="form-control my-3 py-2 border"
+                    placeholder="address"
+                  />
+                  <p style={{ font: "small" }}>
+                    City
+                  </p>
+                  <input
+                    type="text"
+                    className="form-control my-3 py-2 border"
+                    placeholder="City"
+                  />
+                  <p style={{ font: "small" }}>
+                    State
+                  </p>
+                  <input
+                    type="text"
+                    className="form-control my-3 py-2 border"
+                    placeholder="State"
+                  />
+                  <p style={{ font: "small" }}>
+                    Pin Code
+                  </p>
+                  <input
+                    type="number"
+                    className="form-control my-3 py-2 border"
+                    placeholder="Pin Code"
+                  />
+                  {/* <Link to="/paymentMode" className="text-decoration-none"> */}
+                  <div
+                    className={`AddItems-btn text-center px-3 py-2 fw-bold`}
+                    style={{ cursor: "pointer" }}
+                    data-bs-dismiss="modal"
+                  >
+                   <Link className="text-white text-decoration-none" to={"/PayBill"}> Place Order </Link>
+                  </div>
+                  {/* </Link> */}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -221,6 +294,5 @@ function PlaceOrder() {
     </>
   );
 }
-
 
 export default PlaceOrder;

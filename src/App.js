@@ -10,6 +10,7 @@ import PaymentMode from "./pages/Order/PaymentMode";
 import DebitCard from "./pages/Order/DebitCard";
 import Upi from "./pages/Order/Upi";
 import Profile from "./pages/profile/Profile";
+import OrderSuccessful from "./pages/Order/OrderSuccessful";
 function App() {
   return (
     <>
@@ -22,6 +23,7 @@ function App() {
         <Route path="/debitCard" element={<DebitCard/>}> </Route>
         <Route path="/upi" element={<Upi/>}> </Route>
         <Route path="/profile" element={<Profile/>}> </Route>
+        <Route path="/OrderSuccessful" element={<OrderSuccessful/>}> </Route>
     </Routes>
     </>
 

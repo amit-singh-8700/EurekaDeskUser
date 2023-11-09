@@ -33,7 +33,7 @@ function PayBill() {
   }, [viewcart]);
 
   const paymentData = {
-    amount: 1,
+    amount: totalPrices,
     paymentMode: "cod",
     offerId: "",
   };

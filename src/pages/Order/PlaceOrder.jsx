@@ -2,19 +2,51 @@ import { React, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Login from "./Login";
+import { ClipLoader } from "react-spinners";
 
 import {
   login,
   verifyOTPAPI,
   resendOTPAPI,
   getViewCart,
+  getQrUrlAPI,
 } from "../../components/api/api_base_url";
 
 function PlaceOrder() {
+  const token = sessionStorage.getItem("signature");
   const [step, setStep] = useState(1);
   const [viewcart, setviewcart] = useState([]);
+  const [totalPrices, setTotalPrice] = useState(0);
+  const [QrUrl, setQrUrl] = useState([]);
+  const [name, setname] = useState([]);
+  const [address, setaddress] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const history = useNavigate();
+  const login =
+  {
+      name: name,
+      address: address
+  }
+
+  const handleClick = async () => {
+      try {
+          await axios.post(
+              "",
+              login,
+              {
+                  headers: {
+                      Authorization: `Bearer ${token}`,
+                      "Content-Type": "application/json",
+                  },
+              }
+          );
+          alert("successful");
+          window.location.reload(false);
+      } catch (error) {
+          console.log(error);
+          alert("invalid credentials");
+      }
+  }
 
   const handleDecrease = (index) => {
     const updatedViewCart = [...viewcart];
@@ -30,72 +62,20 @@ function PlaceOrder() {
     setviewcart(updatedViewCart);
   };
 
-  const token = sessionStorage.getItem("signature");
-  // const [step, setStep] = useState(1);
-  // const [phone, setphone] = useState([]);
-  // const [otp, setOtp] = useState([]);
-  const [totalPrices, setTotalPrice] = useState(0);
-
-  // const sinup = {
-  //   phone: phone,
-  // };
-
-  // const verifyotp = {
-  //   phone: phone,
-  //   otp: otp,
-  // };
-
-  // const handleClick = async () => {
-  //   try {
-  //     await axios.post(`${login}`, sinup);
-
-  //     alert("registration successful");
-  //     setStep(2);
-
-  //     // window.location.reload(false);
-  //   } catch (error) {
-  //     console.log(error);
-  //     alert("invalid credentials");
-  //   }
-  // };
-
-  // const verify = async () => {
-  //   try {
-  //     const api = await axios.patch(`${verifyOTPAPI}`, verifyotp, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //         "Content-Type": "application/json",
-  //       },
-  //     });
-  //     const data = await api.data;
-  //     sessionStorage.setItem("signature", data.signature);
-
-  //     alert("registration successful");
-  //     setStep(2);
-  //     history("/PayBill");
-  //     window.location.reload(false);
-  //   } catch (error) {
-  //     console.log(error);
-  //     alert("invalid credentials");
-  //   }
-  // };
-
-  // const reotp = async () => {
-  //   try {
-  //     await axios.get(`${resendOTPAPI}`, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //         "Content-Type": "application/json",
-  //       },
-  //     });
-  //     alert("Otp   successful");
-  //     // setStep(3)
-  //     // window.location.reload(false);
-  //   } catch (error) {
-  //     console.log(error);
-  //     alert("invalid credentials");
-  //   }
-  // };
+  const getqr = async () => {
+    try {
+      const getqrdata = await axios.get(`${getQrUrlAPI}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await getqrdata.data;
+      setQrUrl(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const getCart = async () => {
     try {
@@ -107,18 +87,16 @@ function PlaceOrder() {
       });
       const data = await viewcartAPI.data;
       setviewcart(data);
-      // console.log(getFoodsAPi.data);
-      // alert("successful");
-      // setStep(3)
-      // window.location.reload(false);
     } catch (error) {
       console.log(error);
-      // alert("invalid credentials");
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     getCart();
+    getqr();
   }, []);
 
   const calculateTotalPrice = () => {
@@ -138,7 +116,16 @@ function PlaceOrder() {
       <div className="container position-relative">
         <div className="row justify-content-center">
           <div className="col-lg-7 my-2 shadow-sm rounded">
-            {viewcart.map((data, index) => {
+          {loading ? (
+          <center>
+            <div style={{ width: "100%" }}>
+              {" "}
+              <center>
+                <ClipLoader className="text-center" size={50} color="orange" />
+              </center>
+            </div>
+          </center>
+        ) : (viewcart.map((data, index) => {
               return (
                 <div key={data.id} className="row flex-row-reverse">
                   <div className="col-lg-4 col-4 content-center">
@@ -181,7 +168,7 @@ function PlaceOrder() {
                   <hr />
                 </div>
               );
-            })}
+            }))}
             {/* text area */}
             <textarea
               name=""
@@ -205,14 +192,24 @@ function PlaceOrder() {
                 {totalPrices}
               </div>{" "}
               <div>
-                <Link
-                  data-bs-toggle="modal"
-                  data-bs-target="#exampleModal"
-                  style={{ cursor: "pointer" }}
-                  className="fw-bold text-white text-decoration-none"
-                >
-                  Place Order
-                </Link>
+                {QrUrl.includes("/") ? (
+                  <Link
+                    to={"/PayBill"}
+                    style={{ cursor: "pointer" }}
+                    className="fw-bold text-white text-decoration-none"
+                  >
+                    Place Order
+                  </Link>
+                ) : (
+                  <Link
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModal"
+                    style={{ cursor: "pointer" }}
+                    className="fw-bold text-white text-decoration-none"
+                  >
+                    Place Order
+                  </Link>
+                )}
               </div>
             </div>
           </div>
@@ -236,41 +233,31 @@ function PlaceOrder() {
                       <i className="bi bi-x" style={{ cursor: "pointer" }}></i>
                     </div>
                   </div>
-                  <p style={{ font: "small" }}>
-                    Full Name
-                  </p>
+                  <p style={{ font: "small" }}>Full Name</p>
                   <input
                     type="text"
                     className="form-control my-3 py-2 border"
                     placeholder="Full Name"
                   />
-                  <p style={{ font: "small" }}>
-                    address
-                  </p>
+                  <p style={{ font: "small" }}>address</p>
                   <input
                     type="text"
                     className="form-control my-3 py-2 border"
                     placeholder="address"
                   />
-                  <p style={{ font: "small" }}>
-                    City
-                  </p>
+                  <p style={{ font: "small" }}>City</p>
                   <input
                     type="text"
                     className="form-control my-3 py-2 border"
                     placeholder="City"
                   />
-                  <p style={{ font: "small" }}>
-                    State
-                  </p>
+                  <p style={{ font: "small" }}>State</p>
                   <input
                     type="text"
                     className="form-control my-3 py-2 border"
                     placeholder="State"
                   />
-                  <p style={{ font: "small" }}>
-                    Pin Code
-                  </p>
+                  <p style={{ font: "small" }}>Pin Code</p>
                   <input
                     type="number"
                     className="form-control my-3 py-2 border"
@@ -282,7 +269,13 @@ function PlaceOrder() {
                     style={{ cursor: "pointer" }}
                     data-bs-dismiss="modal"
                   >
-                   <Link className="text-white text-decoration-none" to={"/PayBill"}> Place Order </Link>
+                    <Link
+                      className="text-white text-decoration-none"
+                      to={"/PayBill"}
+                    >
+                      {" "}
+                      Place Order{" "}
+                    </Link>
                   </div>
                   {/* </Link> */}
                 </div>

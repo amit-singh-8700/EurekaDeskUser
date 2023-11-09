@@ -3,12 +3,21 @@ import { Link, useNavigate } from "react-router-dom";
 import "./AddInCart.css";
 import Header from "../../components/header/Header";
 import axios from "axios";
-import { addToCartAPI, getFoodAPI, getFoodDetailAPI, getViewCart, login, resendOTPAPI, verifyOTPAPI } from "../../components/api/api_base_url";
+import {
+  addToCartAPI,
+  getFoodAPI,
+  getFoodDetailAPI,
+  getViewCart,
+  login,
+  resendOTPAPI,
+  verifyOTPAPI,
+} from "../../components/api/api_base_url";
 import { useEffect } from "react";
 // import { getFoodDetailAPI } from "../../components/api/api_base_url";
+import { ClipLoader } from "react-spinners";
 
 function AddInCart() {
-  
+  const [loading, setLoading] = useState(true);
   const [hide, setShow] = useState("d-none");
   const category = [
     {
@@ -99,7 +108,7 @@ function AddInCart() {
   const [phone, setphone] = useState([]);
   const [otp, setOtp] = useState([]);
   const history = useNavigate();
-  console.log(fooddetail)
+  console.log(fooddetail);
 
   const addtocart = {
     _id: fooddetail._id,
@@ -115,7 +124,7 @@ function AddInCart() {
     otp: otp,
   };
 
-  console.log(addtocart)
+  console.log(addtocart);
 
   const productPrice = fooddetail.price;
 
@@ -139,12 +148,15 @@ function AddInCart() {
     // You can perform any other actions with the data here
 
     try {
-      const getfooddetail = await axios.get(`${getFoodDetailAPI}/${vendorId}/${itemId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const getfooddetail = await axios.get(
+        `${getFoodDetailAPI}/${vendorId}/${itemId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       const data = await getfooddetail.data;
       setfooddetail(data);
       // console.log(getFoodsAPi.data);
@@ -155,7 +167,6 @@ function AddInCart() {
       console.log(error);
       // alert("invalid credentials");
     }
-
   };
 
   const getFoods = async () => {
@@ -175,6 +186,8 @@ function AddInCart() {
     } catch (error) {
       console.log(error);
       // alert("invalid credentials");
+    } finally {
+      setLoading(false);
     }
   };
   const getCart = async () => {
@@ -215,7 +228,6 @@ function AddInCart() {
       console.log(addcartdata.res);
       // alert("successful");
       setShow("");
-
 
       // window.location.reload(false);
     } catch (error) {
@@ -352,9 +364,22 @@ function AddInCart() {
             </div>
             <hr />
             <div className="row">
-              {food.map((data, index) => {
-                return (
-                  
+              {loading ? (
+                <center>
+                  <div style={{ width: "100%" }}>
+                    {" "}
+                    <center>
+                      <ClipLoader
+                        className="text-center"
+                        size={50}
+                        color="orange"
+                      />
+                    </center>
+                  </div>
+                </center>
+              ) : (
+                food.map((data, index) => {
+                  return (
                     <div key={data.id} className="col-lg-6 my-2">
                       <div className="row flex-row-reverse">
                         <div className="col-lg-4 col-4 content-center">
@@ -365,12 +390,21 @@ function AddInCart() {
                             style={{ cursor: "pointer" }}
                           >
                             <img
-                              src={data.images == null ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMgPtF8x4lhf4oH0rSo-mEMnTMGcUZhXmXvg&usqp=CAU" : `https://eureka-desk.onrender.com/images/${data.images}`}
+                              src={
+                                data.images == null
+                                  ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMgPtF8x4lhf4oH0rSo-mEMnTMGcUZhXmXvg&usqp=CAU"
+                                  : `https://eureka-desk.onrender.com/images/${data.images}`
+                              }
                               className="rounded img-fluid"
                               alt=""
                             />
                             <div className="bg-white px-4 py-1 rounded shadow-sm offer-percent color position-absolute top-100 start-50 translate-middle">
-                              <span style={{ fontSize: "14px" }} onClick={()=>addData(data._id,data.vendorId)}>Add</span>
+                              <span
+                                style={{ fontSize: "14px" }}
+                                onClick={() => addData(data._id, data.vendorId)}
+                              >
+                                Add
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -391,9 +425,10 @@ function AddInCart() {
                         </div>
                       </div>
                     </div>
-                );
-              })}
-            </div> 
+                  );
+                })
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -409,29 +444,38 @@ function AddInCart() {
           <div className="modal-content">
             <div className="modal-body">
               <div className="position-relative">
-              <img
-                src={fooddetail.images == null ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMgPtF8x4lhf4oH0rSo-mEMnTMGcUZhXmXvg&usqp=CAU" : `https://eureka-desk.onrender.com/images/${fooddetail.images}`}
-                className="rounded"
-                width={"100%"}
-                height={"250"}
-                alt=""
-              />
-              <i className="bi bi-x-circle text-white shadow position-absolute top-0 end-0 m-2" data-bs-dismiss="modal" style={{cursor:"pointer"}}></i>
+                <img
+                  src={
+                    fooddetail.images == null
+                      ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMgPtF8x4lhf4oH0rSo-mEMnTMGcUZhXmXvg&usqp=CAU"
+                      : `https://eureka-desk.onrender.com/images/${fooddetail.images}`
+                  }
+                  className="rounded"
+                  width={"100%"}
+                  height={"250"}
+                  alt=""
+                />
+                <i
+                  className="bi bi-x-circle text-white shadow position-absolute top-0 end-0 m-2"
+                  data-bs-dismiss="modal"
+                  style={{ cursor: "pointer" }}
+                ></i>
               </div>
               <div className="py-2">
                 {" "}
                 <div className="d-flex">
-                <div className={fooddetail.foodType == 'veg' ? "bi bi-dice-1 text-success mx-1" : "bi bi-dice-1 text-danger mx-1"}></div>{" "}
-                {fooddetail.foodType}
+                  <div
+                    className={
+                      fooddetail.foodType == "veg"
+                        ? "bi bi-dice-1 text-success mx-1"
+                        : "bi bi-dice-1 text-danger mx-1"
+                    }
+                  ></div>{" "}
+                  {fooddetail.foodType}
                 </div>
-               
-
-                <heading className="heading-2">
-                  {fooddetail.name}
-                </heading>
+                <heading className="heading-2">{fooddetail.name}</heading>
                 <div style={{ fontSize: "small" }}>
-                {fooddetail.description}{" "}
-                
+                  {fooddetail.description}{" "}
                 </div>
               </div>
             </div>
@@ -475,7 +519,7 @@ function AddInCart() {
                 {totalPrice}
               </div>{" "}
               <div>
-              {token ? (
+                {token ? (
                   <Link
                     to="/placeOrder"
                     style={{ cursor: "pointer" }}
@@ -647,5 +691,5 @@ function AddInCart() {
       </div>
     </>
   );
-          }
+}
 export default AddInCart;

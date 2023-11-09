@@ -1,13 +1,14 @@
 import React from "react";
 import "./Header.css";
 import { Link } from "react-router-dom";
+import QR from "../../pages/qr/QR";
 
 function Header() {
   return (
     <>
       <div className="container">
         <div className="row py-3">
-          <div className="col-lg-6 d-flex">
+          <div className="col-lg-5 d-flex">
             <div>
               <h2>Logo</h2>
             </div>
@@ -26,8 +27,8 @@ function Header() {
               </span>
             </div>
           </div>
-          <div className="col-lg-2 content-center display-none">
-            <div className="d-flex shadow p-2 rounded border">
+          <div className="col-lg-3 content-center display-none">
+            <div className="d-flex shadow p-1 rounded border">
               <h6 className="mx-1">Veg Only</h6>{" "}
               <div className="form-check form-switch">
                 <input
@@ -41,6 +42,7 @@ function Header() {
             <Link to={'/profile'}>
             <i className="bi bi-person-circle mx-3 fs-2 color"></i>
             </Link>
+            <QR/>
           </div>
         </div>
       </div>

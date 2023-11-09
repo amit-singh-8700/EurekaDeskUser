@@ -9,6 +9,7 @@ import BottomMenu from "./BottomMenu";
 import animation from "../../animation/timer.json";
 import Lottie from "lottie-react";
 
+
 function Home() {
   const handClick = () => {
     setTimeout(() => {

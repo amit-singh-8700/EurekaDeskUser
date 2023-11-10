@@ -9,7 +9,7 @@ function QR() {
   const [QrUrl, setQrUrl] = useState([]);
   const location = useLocation();
   console.log(location);
-  console.log(QrUrl.includes("https://social.eurekadesk.in/dinein/1"))
+  console.log(QrUrl)
 
 const getqr = async () => {
     try {
@@ -49,7 +49,7 @@ const getqr = async () => {
     },5000)
   }, []);
 
-  return <div className="color" style={{ fontWeight: 'bold' }} >{QrUrl.includes("/")  ? "Restaurant" : 'Delivery'}</div>;
+  return <div className="color" style={{ fontWeight: 'bold' }} >{QrUrl.includes(location.pathname)  ? "Dine" : 'Delivery'}</div>;
 }
 
 export default QR;

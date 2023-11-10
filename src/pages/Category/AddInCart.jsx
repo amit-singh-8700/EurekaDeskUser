@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import  React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./AddInCart.css";
 import Header from "../../components/header/Header";
@@ -13,12 +13,20 @@ import {
   verifyOTPAPI,
 } from "../../components/api/api_base_url";
 import { useEffect } from "react";
-// import { getFoodDetailAPI } from "../../components/api/api_base_url";
-import { ClipLoader } from "react-spinners";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 function AddInCart() {
   const [loading, setLoading] = useState(true);
   const [hide, setShow] = useState("d-none");
+  const [open, setOpen] = React.useState(false);
+
   const category = [
     {
       id: "1",
@@ -136,6 +144,12 @@ function AddInCart() {
   const handleIncrease = () => {
     setQuantity(quantity + 1);
   };
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpen(false);
+  };
 
   const totalPrice = quantity * productPrice;
 
@@ -227,7 +241,10 @@ function AddInCart() {
       });
       console.log(addcartdata.res);
       // alert("successful");
+      
+
       setShow("");
+      setOpen(true);
 
       // window.location.reload(false);
     } catch (error) {
@@ -240,7 +257,7 @@ function AddInCart() {
     try {
       await axios.post(`${login}`, sinup);
 
-      alert("registration successful");
+      setOpen(true);
       setStep(2);
 
       // window.location.reload(false);
@@ -261,7 +278,7 @@ function AddInCart() {
       const data = await api.data;
       sessionStorage.setItem("signature", data.signature);
 
-      alert("registration successful");
+      setOpen(true);
       setStep(2);
       history("/placeOrder");
       window.location.reload(false);
@@ -279,7 +296,7 @@ function AddInCart() {
           "Content-Type": "application/json",
         },
       });
-      alert("Otp   successful");
+
       // setStep(3)
       // window.location.reload(false);
     } catch (error) {
@@ -290,6 +307,11 @@ function AddInCart() {
 
   return (
     <>
+     <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
+          success!
+        </Alert>
+      </Snackbar>
       <div className="container-fluid my-3 position-fixed">
         <div className="row">
           <Header />
@@ -365,18 +387,17 @@ function AddInCart() {
             <hr />
             <div className="row">
               {loading ? (
-                <center>
-                  <div style={{ width: "100%" }}>
-                    {" "}
-                    <center>
-                      <ClipLoader
-                        className="text-center"
-                        size={50}
-                        color="orange"
-                      />
-                    </center>
-                  </div>
-                </center>
+                <>
+                {" "}
+                {Array.from({ length: 5 }).map((_, index) => (
+                   <div className="col-lg-6 my-2">
+                   <div className="row flex-row-reverse">
+                   <Skeleton width={"100%"} height={"150px"} count={1} />
+                   </div>
+                 </div>
+                ))}
+              </>
+               
               ) : (
                 food.map((data, index) => {
                   return (

@@ -7,6 +7,8 @@ import {
   VerifyPaymentApi,
   getViewCart,
 } from "../../components/api/api_base_url";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 function PayBill() {
   const [paymentId, setPaymentId] = useState(null);
@@ -15,6 +17,7 @@ function PayBill() {
   const [paymentMode, setpaymentMode] = useState([]);
   const [viewcart, setviewcart] = useState([]);
   const [totalPrices, setTotalPrice] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   // const createpayment = {
   //   amount: amount,
@@ -94,7 +97,7 @@ function PayBill() {
           razorpayOrderId: response.razorpay_order_id,
           razorpaySignature: response.razorpay_signature,
         };
-        console.log(data)
+        console.log(data);
         const result = await axios.post(VerifyPaymentApi, data);
 
         if (result.data.msg == "success") {
@@ -102,7 +105,7 @@ function PayBill() {
           window.location.href = "/OrderSuccessful"; // Redirect to the success page
         } else {
           // alert("Payment failed. Please try again.");
-          window.location.href = "/OrderSuccessful"; 
+          window.location.href = "/OrderSuccessful";
         }
       },
       prefill: {
@@ -139,6 +142,8 @@ function PayBill() {
     } catch (error) {
       console.log(error);
       // alert("invalid credentials");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -150,88 +155,116 @@ function PayBill() {
     <>
       <div className="container position-relative">
         <div className="row justify-content-center">
-          <div className="col-lg-6 my-2 shadow-sm">
-            <h4 className="py-3">Orders</h4>
-            {viewcart.map((data, index) => {
-              return (
-                <div key={data.id} className="row flex-row-reverse">
-                  <div className="col-lg-4 col-4 content-center">
-                    <div>
-                      <div className="food-price">
-                        {" "}
-                        <i className="bi bi-currency-rupee"></i>{" "}
-                        {data.food.price}
+          {loading ? (
+            <>
+             <div className="col-lg-6 my-2 shadow-sm">
+             <h4 className="py-3">Orders</h4>
+
+              {Array.from({ length: 3 }).map((_, index) => (
+               
+                  <div className="row flex-row-reverse">
+                    <Skeleton width={"100%"} height={"70px"} count={1} />
+                  </div>
+               
+              ))}
+
+              <div className="row my-3 shadow-sm">
+                <div className="col-lg-12 py-2">
+                  <Skeleton width={"100%"} height={"150px"} count={1} />
+                  <div
+                    className={`d-flex justify-content-between px-3 my-3 shadow mb-2`}
+                  >
+                    <Skeleton width={"100%"} height={"60px"} count={1} />
+                  </div>
+                </div>
+              </div>
+              </div>
+            </>
+          ) : (
+            <div className="col-lg-6 my-2 shadow-sm">
+              <h4 className="py-3">Orders</h4>
+
+              {viewcart.map((data, index) => {
+                return (
+                  <div key={data.id} className="row flex-row-reverse">
+                    <div className="col-lg-4 col-4 content-center">
+                      <div>
+                        <div className="food-price">
+                          {" "}
+                          <i className="bi bi-currency-rupee"></i>{" "}
+                          {data.food.price}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="col-lg-8 col-8">
-                    <div className="bi bi-dice-1 text-success"></div>
-                    <heading className="heading-2">{data.food.name}</heading>
-                    <div>
-                      <h6>
-                        <Link to="/" className="color text-decoration-none">
-                          Repeat
-                        </Link>
-                      </h6>
+                    <div className="col-lg-8 col-8">
+                      <div className="bi bi-dice-1 text-success"></div>
+                      <heading className="heading-2">{data.food.name}</heading>
+                      <div>
+                        <h6>
+                          <Link to="/" className="color text-decoration-none">
+                            Repeat
+                          </Link>
+                        </h6>
+                      </div>
                     </div>
+                    <hr />
+                  </div>
+                );
+              })}
+              {/* Bill details */}
+              <div className="row my-3 shadow-sm">
+                <div className="col-lg-12 py-2">
+                  <h5>Bill Details</h5>
+                  <div className="d-flex justify-content-between">
+                    <span>Item Total </span>
+                    <span>
+                      <i className="bi bi-currency-rupee"></i>
+                      {totalPrices}
+                    </span>
+                  </div>
+                  <div className="d-flex justify-content-between">
+                    <span>Vat </span>
+                    <span>
+                      <i className="bi bi-currency-rupee"></i>650
+                    </span>
+                  </div>
+                  <div className="d-flex justify-content-between">
+                    <span>Service Charge</span>
+                    <span>
+                      <i className="bi bi-currency-rupee"></i>650
+                    </span>
                   </div>
                   <hr />
-                </div>
-              );
-            })}
-            {/* Bill details */}
-            <div className="row my-3 shadow-sm">
-              <div className="col-lg-12 py-2">
-                <h5>Bill Details</h5>
-                <div className="d-flex justify-content-between">
-                  <span>Item Total </span>
-                  <span>
-                    <i className="bi bi-currency-rupee"></i>
-                    {totalPrices}
-                  </span>
-                </div>
-                <div className="d-flex justify-content-between">
-                  <span>Vat </span>
-                  <span>
-                    <i className="bi bi-currency-rupee"></i>650
-                  </span>
-                </div>
-                <div className="d-flex justify-content-between">
-                  <span>Service Charge</span>
-                  <span>
-                    <i className="bi bi-currency-rupee"></i>650
-                  </span>
-                </div>
-                <hr />
-                <div className="d-flex justify-content-between">
-                  <span className="fw-bold">To Pay</span>
-                  <span className="fw-bold">
-                    <i className="bi bi-currency-rupee"></i>
-                    {totalPrices}
-                  </span>
-                </div>
-                .
-                <div
-                  className={`d-flex justify-content-between AddItems-btn px-3 py-3 shadow mb-5`}
-                >
-                  <div className="fw-bold">
-                    {viewcart.length} item |
-                    <i className="bi bi-currency-rupee"></i>
-                    {totalPrices}
-                  </div>{" "}
-                  <div>
-                    {" "}
-                    <button
-                      className="btn text-white"
-                      onClick={displayRazorpay}
-                    >
-                      Pay Bill
-                    </button>
+                  <div className="d-flex justify-content-between">
+                    <span className="fw-bold">To Pay</span>
+                    <span className="fw-bold">
+                      <i className="bi bi-currency-rupee"></i>
+                      {totalPrices}
+                    </span>
+                  </div>
+                  .
+                  <div
+                    className={`d-flex justify-content-between AddItems-btn px-3 py-3 shadow mb-5`}
+                  >
+                    <div className="fw-bold">
+                      {viewcart.length} item |
+                      <i className="bi bi-currency-rupee"></i>
+                      {totalPrices}
+                    </div>{" "}
+                    <div>
+                      {" "}
+                      <button
+                        className="btn text-white"
+                        onClick={displayRazorpay}
+                      >
+                        Pay Bill
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
       <div className="col-lg-6 col-12"></div>

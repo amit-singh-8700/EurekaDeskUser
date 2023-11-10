@@ -12,3 +12,4 @@ export const getViewCart = `${baseUrl + "customer/cart"}`;
 export const CreatePaymentAPI = `${baseUrl + "customer/create-payment"}`;
 export const VerifyPaymentApi = `${baseUrl + "customer/verify-payment"}`;
 export const getQrUrlAPI = `${baseUrl + "table/654894521244d30041ea340b"}`;
+export const updateEmployeeAPI = `${baseUrl + "customer/profile"}`;

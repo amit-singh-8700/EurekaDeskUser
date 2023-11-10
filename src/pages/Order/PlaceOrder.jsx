@@ -2,7 +2,8 @@ import { React, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Login from "./Login";
-import { ClipLoader } from "react-spinners";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 import {
   login,
@@ -10,6 +11,7 @@ import {
   resendOTPAPI,
   getViewCart,
   getQrUrlAPI,
+  updateEmployeeAPI,
 } from "../../components/api/api_base_url";
 
 function PlaceOrder() {
@@ -18,35 +20,48 @@ function PlaceOrder() {
   const [viewcart, setviewcart] = useState([]);
   const [totalPrices, setTotalPrice] = useState(0);
   const [QrUrl, setQrUrl] = useState([]);
-  const [name, setname] = useState([]);
-  const [address, setaddress] = useState([]);
+  const [newaddress, setnewaddress] = useState([]);
+  const [firstName, setfirstName] = useState([]);
+  const [lastName, setlastName] = useState([]);
+  const [email, setemail] = useState([]);
+  const [addresserror, setaddresserror] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const login =
-  {
-      name: name,
-      address: address
-  }
+  const updateemployee = {
+    firstName: firstName,
+    lastName: lastName,
+    address: newaddress,
+    email: email,
+  };
+  console.log(updateemployee);
 
-  const handleClick = async () => {
-      try {
-          await axios.post(
-              "",
-              login,
-              {
-                  headers: {
-                      Authorization: `Bearer ${token}`,
-                      "Content-Type": "application/json",
-                  },
-              }
-          );
-          alert("successful");
-          window.location.reload(false);
-      } catch (error) {
-          console.log(error);
-          alert("invalid credentials");
+  const addData = async () => {
+    try {
+      const editemployeedata = await axios.patch(
+        updateEmployeeAPI,
+        updateemployee,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await editemployeedata.data;
+      console.log(data);
+      alert("successful");
+      if (data.constraints['isLength'] != null) {
+        setaddresserror(data.constraints['isLength']);
+      } else {
+        setaddresserror("Successful.");
       }
-  }
+
+      window.location.reload(false);
+    } catch (error) {
+      console.log(error);
+      alert("invalid credentials");
+    }
+  };
 
   const handleDecrease = (index) => {
     const updatedViewCart = [...viewcart];
@@ -115,70 +130,73 @@ function PlaceOrder() {
     <>
       <div className="container position-relative">
         <div className="row justify-content-center">
-          <div className="col-lg-7 my-2 shadow-sm rounded">
           {loading ? (
-          <center>
-            <div style={{ width: "100%" }}>
-              {" "}
-              <center>
-                <ClipLoader className="text-center" size={50} color="orange" />
-              </center>
-            </div>
-          </center>
-        ) : (viewcart.map((data, index) => {
-              return (
-                <div key={data.id} className="row flex-row-reverse">
-                  <div className="col-lg-4 col-4 content-center">
-                    <div>
-                      <div className="qty-btn-cover py-1">
-                        <button
-                          // onClick={handleDecrease}
-                          className="qty-btn"
-                          onClick={() => handleDecrease(index)}
-                        >
-                          -
-                        </button>
-                        <span>{data.quantity}</span>
-                        <button
-                          //  onClick={handleIncrease}
-                          className="qty-btn"
-                          onClick={() => handleIncrease(index)}
-                        >
-                          +
-                        </button>
-                      </div>
-                      <div className="food-price">
-                        {" "}
-                        <i className="bi bi-currency-rupee"></i>{" "}
-                        {data.food.price}
-                      </div>
-                    </div>
+            <>
+              {Array.from({ length: 5 }).map((_, index) => (
+                <div className="col-lg-7 my-2 shadow-sm rounded">
+                  <div className="row my-2 shadow-sm rounded">
+                    <Skeleton width={"100%"} height={"70px"} count={1} />
                   </div>
-                  <div className="col-lg-8 col-8">
-                    <div className="bi bi-dice-1 text-success"></div>
-                    <heading className="heading-2">{data.food.name}</heading>
-                    <div>
-                      <h6>
-                        <Link to="/" className="color text-decoration-none">
-                          Edit
-                        </Link>
-                      </h6>
-                    </div>
-                  </div>
-                  <hr />
                 </div>
-              );
-            }))}
-            {/* text area */}
-            <textarea
-              name=""
-              className="form-control border-none"
-              id=""
-              cols="30"
-              rows="2"
-              placeholder="Write cooking instructions"
-            ></textarea>
-          </div>
+              ))}
+            </>
+          ) : (
+            <div className="col-lg-7 my-2 shadow-sm rounded">
+              {viewcart.map((data, index) => {
+                return (
+                  <div key={data.id} className="row flex-row-reverse">
+                    <div className="col-lg-4 col-4 content-center">
+                      <div>
+                        <div className="qty-btn-cover py-1">
+                          <button
+                            // onClick={handleDecrease}
+                            className="qty-btn"
+                            onClick={() => handleDecrease(index)}
+                          >
+                            -
+                          </button>
+                          <span>{data.quantity}</span>
+                          <button
+                            //  onClick={handleIncrease}
+                            className="qty-btn"
+                            onClick={() => handleIncrease(index)}
+                          >
+                            +
+                          </button>
+                        </div>
+                        <div className="food-price">
+                          {" "}
+                          <i className="bi bi-currency-rupee"></i>{" "}
+                          {data.food.price}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-lg-8 col-8">
+                      <div className="bi bi-dice-1 text-success"></div>
+                      <heading className="heading-2">{data.food.name}</heading>
+                      <div>
+                        <h6>
+                          <Link to="/" className="color text-decoration-none">
+                            Edit
+                          </Link>
+                        </h6>
+                      </div>
+                    </div>
+                    <hr />
+                  </div>
+                );
+              })}
+              {/* text area */}
+              <textarea
+                name=""
+                className="form-control border-none"
+                id=""
+                cols="30"
+                rows="2"
+                placeholder="Write cooking instructions"
+              ></textarea>
+            </div>
+          )}
         </div>
       </div>
       <div className="container">
@@ -233,35 +251,38 @@ function PlaceOrder() {
                       <i className="bi bi-x" style={{ cursor: "pointer" }}></i>
                     </div>
                   </div>
-                  <p style={{ font: "small" }}>Full Name</p>
+                  <p style={{ font: "small" }}>First Name</p>
                   <input
                     type="text"
                     className="form-control my-3 py-2 border"
-                    placeholder="Full Name"
+                    placeholder="First Name"
+                    value={firstName}
+                    onChange={(e) => setfirstName(e.target.value)}
                   />
-                  <p style={{ font: "small" }}>address</p>
+                  <p style={{ font: "small" }}>Last Name</p>
                   <input
                     type="text"
                     className="form-control my-3 py-2 border"
-                    placeholder="address"
+                    placeholder="Last Name"
+                    value={lastName}
+                    onChange={(e) => setlastName(e.target.value)}
                   />
-                  <p style={{ font: "small" }}>City</p>
+                  <p style={{ font: "small" }}>Address</p>
                   <input
                     type="text"
                     className="form-control my-3 py-2 border"
-                    placeholder="City"
+                    placeholder="Address"
+                    value={newaddress}
+                    onChange={(e) => setnewaddress(e.target.value)}
                   />
-                  <p style={{ font: "small" }}>State</p>
+                  <p>{addresserror}</p>
+                  <p style={{ font: "small" }}>E-mail</p>
                   <input
-                    type="text"
+                    type="email"
                     className="form-control my-3 py-2 border"
-                    placeholder="State"
-                  />
-                  <p style={{ font: "small" }}>Pin Code</p>
-                  <input
-                    type="number"
-                    className="form-control my-3 py-2 border"
-                    placeholder="Pin Code"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setemail(e.target.value)}
                   />
                   {/* <Link to="/paymentMode" className="text-decoration-none"> */}
                   <div
@@ -272,6 +293,7 @@ function PlaceOrder() {
                     <Link
                       className="text-white text-decoration-none"
                       to={"/PayBill"}
+                      onClick={addData}
                     >
                       {" "}
                       Place Order{" "}

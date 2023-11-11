@@ -50,12 +50,6 @@ function PlaceOrder() {
       const data = await editemployeedata.data;
       console.log(data);
       alert("successful");
-      if (data.constraints['isLength'] != null) {
-        setaddresserror(data.constraints['isLength']);
-      } else {
-        setaddresserror("Successful.");
-      }
-
       window.location.reload(false);
     } catch (error) {
       console.log(error);

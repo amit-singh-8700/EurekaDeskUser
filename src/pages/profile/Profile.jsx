@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react'
-import Header from '../../components/header/Header'
-import { ProfileAPI, editProfileAPI } from '../../components/api/api_base_url';
-import axios from 'axios';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from "react";
+import Header from "../../components/header/Header";
+import { ProfileAPI, editProfileAPI } from "../../components/api/api_base_url";
+import axios from "axios";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   MDBCol,
   MDBContainer,
@@ -19,31 +19,31 @@ import {
   MDBProgressBar,
   MDBIcon,
   MDBListGroup,
-  MDBListGroupItem
-} from 'mdb-react-ui-kit';
+  MDBListGroupItem,
+} from "mdb-react-ui-kit";
 
 function Profile() {
   const token = sessionStorage.getItem("signature");
 
-  const [profile, setProfile] = useState([])
-  const [firstname, setfirstnamee] = useState([])
-  const [lastname, setlastname] = useState([])
-  const [address, setaddress] = useState([])
+  const [profile, setProfile] = useState([]);
+  const [firstname, setfirstnamee] = useState([]);
+  const [lastname, setlastname] = useState([]);
+  const [address, setaddress] = useState([]);
 
   const editprofile = {
     firstname: firstname,
     lastname: lastname,
-    address: address
-  }
-  const  removeTkoen = ()=>{
+    address: address,
+  };
+  const removeTkoen = () => {
     const token = sessionStorage.removeItem("signature");
-  }
+  };
 
   const profilefunc = async () => {
     try {
-    const ProfileApiresponse = await axios.get(
+      const ProfileApiresponse = await axios.get(
         `${ProfileAPI}`,
-        
+
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -51,22 +51,21 @@ function Profile() {
           },
         }
       );
-      setProfile(ProfileApiresponse.data)
-      console.log(ProfileApiresponse.data)
+      setProfile(ProfileApiresponse.data);
+      console
+        .log(ProfileApiresponse.data)
 
-      
-      // setStep(3)
-      // window.location
-      .reload(false);
+        // setStep(3)
+        // window.location
+        .reload(false);
     } catch (error) {
       console.log(error);
-      
     }
-  }
+  };
 
   const editProfileFunc = async () => {
     try {
-    const editProfileApiResponse = await axios.patch(
+      const editProfileApiResponse = await axios.patch(
         `${editProfileAPI}`,
         editprofile,
         {
@@ -84,17 +83,17 @@ function Profile() {
       console.log(error);
       alert("invalid credentials");
     }
-  }
+  };
   useEffect(() => {
-    profilefunc()
-  }, [])
-  console.log(profile)
+    profilefunc();
+  }, []);
+  console.log(profile);
   return (
     <>
-    <Header/>
-    <section style={{ backgroundColor: '#eee' }}>
-      <MDBContainer className="py-5">
-        {/* <MDBRow>
+      <Header />
+      <section style={{ backgroundColor: "#eee" }}>
+        <MDBContainer className="py-5">
+          {/* <MDBRow>
           <MDBCol>
             <MDBBreadcrumb className="bg-light rounded-3 p-3 mb-4">
               <MDBBreadcrumbItem>
@@ -108,26 +107,27 @@ function Profile() {
           </MDBCol>
         </MDBRow> */}
 
-        <MDBRow>
-          <MDBCol lg="4">
-            <MDBCard className="mb-4">
-              <MDBCardBody className="text-center">
-                <MDBCardImage
-                  src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
-                  alt="avatar"
-                  className="rounded-circle"
-                  style={{ width: '150px' }}
-                  fluid />
-                <p className="text-muted mb-1">{profile.firstName}</p>
-                <p className="text-muted mb-4">{profile.phone}</p>
-                <div className="d-flex justify-content-center mb-2">
-                  {/* <MDBBtn>Follow</MDBBtn>
+          <MDBRow>
+            <MDBCol lg="4">
+              <MDBCard className="mb-4">
+                <MDBCardBody className="text-center">
+                  <MDBCardImage
+                    src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
+                    alt="avatar"
+                    className="rounded-circle"
+                    style={{ width: "150px" }}
+                    fluid
+                  />
+                  <p className="text-muted mb-1">{profile.firstName}</p>
+                  <p className="text-muted mb-4">{profile.phone}</p>
+                  <div className="d-flex justify-content-center mb-2">
+                    {/* <MDBBtn>Follow</MDBBtn>
                   <MDBBtn outline className="ms-1">Message</MDBBtn> */}
-                </div>
-              </MDBCardBody>
-            </MDBCard>
+                  </div>
+                </MDBCardBody>
+              </MDBCard>
 
-            {/* <MDBCard className="mb-4 mb-lg-0">
+              {/* <MDBCard className="mb-4 mb-lg-0">
               <MDBCardBody className="p-0">
                 <MDBListGroup flush className="rounded-3">
                   <MDBListGroupItem className="d-flex justify-content-between align-items-center p-3">
@@ -153,58 +153,68 @@ function Profile() {
                 </MDBListGroup>
               </MDBCardBody>
             </MDBCard> */}
-          </MDBCol>
-          <MDBCol lg="8">
-            <MDBCard className="mb-4">
-              <MDBCardBody>
-                <MDBRow>
-                  <MDBCol sm="3">
-                    <MDBCardText>First Name</MDBCardText>
-                  </MDBCol>
-                  <MDBCol sm="9">
-                    <MDBCardText className="text-muted">{profile.firstName}</MDBCardText>
-                  </MDBCol>
-                </MDBRow>
-                <hr />
-                <MDBRow>
-                  <MDBCol sm="3">
-                    <MDBCardText>Last Name</MDBCardText>
-                  </MDBCol>
-                  <MDBCol sm="9">
-                    <MDBCardText className="text-muted">{profile.lastName}</MDBCardText>
-                  </MDBCol>
-                </MDBRow>
-                <hr />
-                <MDBRow>
-                  <MDBCol sm="3">
-                    <MDBCardText>Email</MDBCardText>
-                  </MDBCol>
-                  <MDBCol sm="9">
-                    <MDBCardText className="text-muted">{profile.email}</MDBCardText>
-                  </MDBCol>
-                </MDBRow>
-                <hr />
-                <MDBRow>
-                  <MDBCol sm="3">
-                    <MDBCardText>Phone</MDBCardText>
-                  </MDBCol>
-                  <MDBCol sm="9">
-                    <MDBCardText className="text-muted">{profile.phone}</MDBCardText>
-                  </MDBCol>
-                </MDBRow>
-                <hr />
-                <MDBRow>
-                  <MDBCol sm="3">
-                    <MDBCardText>Address</MDBCardText>
-                  </MDBCol>
-                  <MDBCol sm="9">
-                    <MDBCardText className="text-muted">{profile.address}</MDBCardText>
-                  </MDBCol>
-                </MDBRow>
-              </MDBCardBody>
-            </MDBCard>
+            </MDBCol>
+            <MDBCol lg="8">
+              <MDBCard className="mb-4">
+                <MDBCardBody>
+                  <MDBRow>
+                    <MDBCol sm="3">
+                      <MDBCardText>First Name</MDBCardText>
+                    </MDBCol>
+                    <MDBCol sm="9">
+                      <MDBCardText className="text-muted">
+                        {profile.firstName}
+                      </MDBCardText>
+                    </MDBCol>
+                  </MDBRow>
+                  <hr />
+                  <MDBRow>
+                    <MDBCol sm="3">
+                      <MDBCardText>Last Name</MDBCardText>
+                    </MDBCol>
+                    <MDBCol sm="9">
+                      <MDBCardText className="text-muted">
+                        {profile.lastName}
+                      </MDBCardText>
+                    </MDBCol>
+                  </MDBRow>
+                  <hr />
+                  <MDBRow>
+                    <MDBCol sm="3">
+                      <MDBCardText>Email</MDBCardText>
+                    </MDBCol>
+                    <MDBCol sm="9">
+                      <MDBCardText className="text-muted">
+                        {profile.email}
+                      </MDBCardText>
+                    </MDBCol>
+                  </MDBRow>
+                  <hr />
+                  <MDBRow>
+                    <MDBCol sm="3">
+                      <MDBCardText>Phone</MDBCardText>
+                    </MDBCol>
+                    <MDBCol sm="9">
+                      <MDBCardText className="text-muted">
+                        {profile.phone}
+                      </MDBCardText>
+                    </MDBCol>
+                  </MDBRow>
+                  <hr />
+                  <MDBRow>
+                    <MDBCol sm="3">
+                      <MDBCardText>Address</MDBCardText>
+                    </MDBCol>
+                    <MDBCol sm="9">
+                      <MDBCardText className="text-muted">
+                        {profile.address}
+                      </MDBCardText>
+                    </MDBCol>
+                  </MDBRow>
+                </MDBCardBody>
+              </MDBCard>
 
-            {/* <MDBRow>
+              {/* <MDBRow>
               <MDBCol md="6">
                 <MDBCard className="mb-4 mb-md-0">
                   <MDBCardBody>
@@ -269,11 +279,12 @@ function Profile() {
                 </MDBCard>
               </MDBCol>
             </MDBRow> */}
-          </MDBCol>
-        </MDBRow>
-      </MDBContainer>
-    </section>
+              <button onClick={removeTkoen}>Logout</button>
+            </MDBCol>
+          </MDBRow>
+        </MDBContainer>
+      </section>
     </>
-  )
-  }
+  );
+}
 export default Profile;

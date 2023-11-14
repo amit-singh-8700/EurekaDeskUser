@@ -9,12 +9,11 @@ function Header() {
       <div className="container">
         <div className="row py-3">
           <div className="col-lg-5 d-flex">
-            <div>
-              <h2>Logo</h2>
-            </div>
+            <Link className="text-black text-decoration-none" to={'/'}>
             <div className="mx-2">
               <h2>Eurekasesk</h2>
             </div>
+            </Link>
           </div>
           <div className="col-lg-4">
             <div className="input-group shadow rounded border" style={{backgroundColor:'#D9D9D91F'}}>

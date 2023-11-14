@@ -119,6 +119,7 @@ function PlaceOrder() {
   useEffect(() => {
     setTotalPrice(calculateTotalPrice());
   }, [viewcart]);
+  console.log(viewcart.length);
 
   return (
     <>
@@ -134,6 +135,10 @@ function PlaceOrder() {
                 </div>
               ))}
             </>
+          ) : viewcart.length == 0 ? (
+            <div className="col-lg-7 my-2 text-center color fw-bold fs-2">
+              Cart is Empty!{" "}
+            </div>
           ) : (
             <div className="col-lg-7 my-2 shadow-sm rounded">
               {viewcart.map((data, index) => {
@@ -166,7 +171,13 @@ function PlaceOrder() {
                       </div>
                     </div>
                     <div className="col-lg-8 col-8">
-                      <div className="bi bi-dice-1 text-success"></div>
+                      <div
+                        className={
+                          data.food.foodType == "veg"
+                            ? "bi bi-dice-1 text-success mx-1"
+                            : "bi bi-dice-1 text-danger mx-1"
+                        }
+                      ></div>
                       <heading className="heading-2">{data.food.name}</heading>
                       <div>
                         <h6>
@@ -193,40 +204,80 @@ function PlaceOrder() {
           )}
         </div>
       </div>
-      <div className="container">
-        <div className="row justify-content-center">
-          <div className="col-lg-6 col-12 position-absolute bottom-0 start-50 translate-middle-x my-2">
-            <div
-              className={`d-flex justify-content-between AddItems-btn px-3 py-3`}
-            >
-              <div className="fw-bold">
-                {viewcart.length} item |<i className="bi bi-currency-rupee"></i>
-                {totalPrices}
-              </div>{" "}
-              <div>
-                {QrUrl.includes("/") ? (
-                  <Link
-                    to={"/PayBill"}
-                    style={{ cursor: "pointer" }}
-                    className="fw-bold text-white text-decoration-none"
-                  >
-                    Place Order
-                  </Link>
-                ) : (
-                  <Link
-                    data-bs-toggle="modal"
-                    data-bs-target="#exampleModal"
-                    style={{ cursor: "pointer" }}
-                    className="fw-bold text-white text-decoration-none"
-                  >
-                    Place Order
-                  </Link>
-                )}
+      {viewcart.length == 0 ? (
+        <div className="container d-none">
+          <div className="row justify-content-center">
+            <div className="col-lg-6 col-12 position-absolute bottom-0 start-50 translate-middle-x my-2">
+              <div
+                className={`d-flex justify-content-between AddItems-btn px-3 py-3`}
+              >
+                <div className="fw-bold">
+                  {viewcart.length} item |
+                  <i className="bi bi-currency-rupee"></i>
+                  {totalPrices}
+                </div>{" "}
+                <div>
+                  {QrUrl.includes("/") ? (
+                    <Link
+                      to={"/PayBill"}
+                      style={{ cursor: "pointer" }}
+                      className="fw-bold text-white text-decoration-none"
+                    >
+                      Place Order
+                    </Link>
+                  ) : (
+                    <Link
+                      data-bs-toggle="modal"
+                      data-bs-target="#exampleModal"
+                      style={{ cursor: "pointer" }}
+                      className="fw-bold text-white text-decoration-none"
+                    >
+                      Place Order
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="container">
+          <div className="row justify-content-center">
+            <div className="col-lg-6 col-12 position-absolute bottom-0 start-50 translate-middle-x my-2">
+              <div
+                className={`d-flex justify-content-between AddItems-btn px-3 py-3`}
+              >
+                <div className="fw-bold">
+                  {viewcart.length} item |
+                  <i className="bi bi-currency-rupee"></i>
+                  {totalPrices}
+                </div>{" "}
+                <div>
+                  {QrUrl.includes("/") ? (
+                    <Link
+                      to={"/PayBill"}
+                      style={{ cursor: "pointer" }}
+                      className="fw-bold text-white text-decoration-none"
+                    >
+                      Place Order
+                    </Link>
+                  ) : (
+                    <Link
+                      data-bs-toggle="modal"
+                      data-bs-target="#exampleModal"
+                      style={{ cursor: "pointer" }}
+                      className="fw-bold text-white text-decoration-none"
+                    >
+                      Place Order
+                    </Link>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div
         className="modal fade"
         id="exampleModal"

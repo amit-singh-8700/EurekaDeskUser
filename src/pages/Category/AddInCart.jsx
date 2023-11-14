@@ -1,4 +1,4 @@
-import  React, { useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./AddInCart.css";
 import Header from "../../components/header/Header";
@@ -241,7 +241,6 @@ function AddInCart() {
       });
       console.log(addcartdata.res);
       // alert("successful");
-      
 
       setShow("");
       setOpen(true);
@@ -280,7 +279,6 @@ function AddInCart() {
 
       setOpen(true);
       setStep(2);
-      history("/placeOrder");
       window.location.reload(false);
     } catch (error) {
       console.log(error);
@@ -307,7 +305,7 @@ function AddInCart() {
 
   return (
     <>
-     <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
+      <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
           success!
         </Alert>
@@ -388,16 +386,15 @@ function AddInCart() {
             <div className="row">
               {loading ? (
                 <>
-                {" "}
-                {Array.from({ length: 5 }).map((_, index) => (
-                   <div className="col-lg-6 my-2">
-                   <div className="row flex-row-reverse">
-                   <Skeleton width={"100%"} height={"150px"} count={1} />
-                   </div>
-                 </div>
-                ))}
-              </>
-               
+                  {" "}
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <div className="col-lg-6 my-2">
+                      <div className="row flex-row-reverse">
+                        <Skeleton width={"100%"} height={"150px"} count={1} />
+                      </div>
+                    </div>
+                  ))}
+                </>
               ) : (
                 food.map((data, index) => {
                   return (
@@ -420,17 +417,39 @@ function AddInCart() {
                               alt=""
                             />
                             <div className="bg-white px-4 py-1 rounded shadow-sm offer-percent color position-absolute top-100 start-50 translate-middle">
-                              <span
-                                style={{ fontSize: "14px" }}
-                                onClick={() => addData(data._id, data.vendorId)}
-                              >
-                                Add
+                              <span style={{ fontSize: "14px" }}>
+                                {token ? (
+                                  <Link
+                                    style={{ cursor: "pointer" }}
+                                    className="fw-bold color text-decoration-none"
+                                    onClick={() =>
+                                      addData(data._id, data.vendorId)
+                                    }
+                                  >
+                                    Add
+                                  </Link>
+                                ) : (
+                                  <Link
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#exampleModal3"
+                                    style={{ cursor: "pointer" }}
+                                    className="fw-bold color text-decoration-none"
+                                  >
+                                    Add
+                                  </Link>
+                                )}
                               </span>
                             </div>
                           </div>
                         </div>
                         <div className="col-lg-8 col-8">
-                          <div className="bi bi-dice-1 text-success"></div>
+                          <div
+                            className={
+                              data.foodType == "veg"
+                                ? "bi bi-dice-1 text-success mx-1"
+                                : "bi bi-dice-1 text-danger mx-1"
+                            }
+                          ></div>
                           <heading className="heading-2">{data.name}</heading>
                           <div className="food-price">
                             {" "}
@@ -540,24 +559,13 @@ function AddInCart() {
                 {totalPrice}
               </div>{" "}
               <div>
-                {token ? (
-                  <Link
-                    to="/placeOrder"
-                    style={{ cursor: "pointer" }}
-                    className="fw-bold text-white text-decoration-none"
-                  >
-                    Next
-                  </Link>
-                ) : (
-                  <Link
-                    data-bs-toggle="modal"
-                    data-bs-target="#exampleModal3"
-                    style={{ cursor: "pointer" }}
-                    className="fw-bold text-white text-decoration-none"
-                  >
-                    Next
-                  </Link>
-                )}
+                <Link
+                  to="/placeOrder"
+                  style={{ cursor: "pointer" }}
+                  className="fw-bold text-white text-decoration-none"
+                >
+                  Next
+                </Link>
               </div>
             </div>
           </div>

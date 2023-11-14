@@ -2,10 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 function BottomMenu() {
-  const  removeTkoen = ()=>{
-    const token = sessionStorage.removeItem("signature");
-
-  }
+  
   return (
     <>
       <div

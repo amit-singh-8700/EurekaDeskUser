@@ -197,7 +197,9 @@ function PayBill() {
                       </div>
                     </div>
                     <div className="col-lg-8 col-8">
-                      <div className="bi bi-dice-1 text-success"></div>
+                      <div className={ data.food.foodType == "veg"
+                        ? "bi bi-dice-1 text-success mx-1"
+                        : "bi bi-dice-1 text-danger mx-1"}></div>
                       <heading className="heading-2">{data.food.name}</heading>
                       <div>
                         <h6>

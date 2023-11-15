@@ -1,0 +1,46 @@
+:root {
+    --orange: #F87B09;
+    --white: #ffffff;
+    --gray: #091E420F;
+  }
+
+  /* primary button */
+.primary-button{
+    background-color: var(--orange);
+    border:none;
+    border-radius:5px;
+    color: white;
+}
+.primary-button:hover{
+ background-color:#BC5A00;
+}
+
+  /* primary button */
+  .primary-button-outline{
+    background-color:transparent;
+    border:1px solid var(--orange);
+    border-radius:5px;
+    color:var(--orange);
+}
+.primary-button-outline:hover{
+ border:1px solid #BC5A00;
+}
+
+
+.secondary-button{
+    background-color: var(--gray);
+    border:none;
+    border-radius:5px;
+    color: black;
+}
+.secondary-button:hover{
+    background-color:#00000040;
+   }
+.hover:hover{
+  background-color:#00000040;
+}
+
+.select-button{
+  background-color:#F87B091F;
+  color: var(--orange);
+}

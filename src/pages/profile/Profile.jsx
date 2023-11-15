@@ -3,7 +3,7 @@ import Header from "../../components/header/Header";
 import { ProfileAPI, editProfileAPI } from "../../components/api/api_base_url";
 import axios from "axios";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   MDBCol,
   MDBContainer,
@@ -23,6 +23,7 @@ import {
 } from "mdb-react-ui-kit";
 
 function Profile() {
+   const  history = useNavigate();
   const token = sessionStorage.getItem("signature");
 
   const [profile, setProfile] = useState([]);
@@ -37,6 +38,7 @@ function Profile() {
   };
   const removeTkoen = () => {
     const token = sessionStorage.removeItem("signature");
+    history('/')
   };
 
   const profilefunc = async () => {
@@ -279,7 +281,7 @@ function Profile() {
                 </MDBCard>
               </MDBCol>
             </MDBRow> */}
-              <button onClick={removeTkoen}>Logout</button>
+              <button className="primary-button shadow fw-bold" style={{padding:".5rem 1.5rem .5rem 1.5rem"}} onClick={removeTkoen}>Logout</button>
             </MDBCol>
           </MDBRow>
         </MDBContainer>

@@ -115,8 +115,9 @@ function AddInCart() {
   const [step, setStep] = useState(1);
   const [phone, setphone] = useState([]);
   const [otp, setOtp] = useState([]);
+  const [price, setprice] = useState([]);
+  const [id, setid] = useState([]);
   const history = useNavigate();
-  console.log(fooddetail);
 
   const addtocart = {
     _id: fooddetail._id,
@@ -134,7 +135,7 @@ function AddInCart() {
 
   console.log(addtocart);
 
-  const productPrice = fooddetail.price;
+  const productPrice = price;
 
   const handleDecrease = () => {
     if (quantity > 1) {
@@ -242,6 +243,36 @@ function AddInCart() {
       console.log(addcartdata.res);
       // alert("successful");
 
+      setShow("");
+      setOpen(true);
+
+      // window.location.reload(false);
+    } catch (error) {
+      console.log(error);
+      alert("invalid credentials");
+    }
+  };
+
+  const addCart2 = async (id, price) => {
+    // console.log(addtocart);
+    setid(id)
+    try {
+      setprice(price);
+      const addcartdata = await axios.post(
+        `${addToCartAPI}`,
+        {
+          _id: id,
+          unit: quantity,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(addcartdata.res);
+      // alert("successful");
       setShow("");
       setOpen(true);
 
@@ -403,8 +434,6 @@ function AddInCart() {
                         <div className="col-lg-4 col-4 content-center">
                           <div
                             className="position-relative"
-                            data-bs-toggle="modal"
-                            data-bs-target="#exampleModal"
                             style={{ cursor: "pointer" }}
                           >
                             <img
@@ -416,30 +445,34 @@ function AddInCart() {
                               className="rounded img-fluid"
                               alt=""
                             />
-                            <div className="bg-white px-4 py-1 rounded shadow-sm offer-percent color position-absolute top-100 start-50 translate-middle">
-                              <span style={{ fontSize: "14px" }}>
-                                {token ? (
-                                  <Link
-                                    style={{ cursor: "pointer" }}
-                                    className="fw-bold color text-decoration-none"
-                                    onClick={() =>
-                                      addData(data._id, data.vendorId)
-                                    }
-                                  >
-                                    Add
-                                  </Link>
-                                ) : (
-                                  <Link
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#exampleModal3"
-                                    style={{ cursor: "pointer" }}
-                                    className="fw-bold color text-decoration-none"
-                                  >
-                                    Add
-                                  </Link>
-                                )}
-                              </span>
-                            </div>
+                           
+                              {price == 0 || data._id !== id ? (
+                              
+                              <div className="bg-white px-4 py-1 rounded shadow-sm offer-percent color position-absolute top-100 start-50 translate-middle">
+                                  <span onClick={() => addCart2(data._id, data.price)} style={{ fontSize: "14px" }}>Add</span>
+                               </div>
+                              ) : ( 
+                                <div className="bg-white px-4 py-1 rounded offer-percent color position-absolute top-100 start-50 translate-middle">
+                                <div className="modal-footer d-flex justify-content-between">
+                                  <div className="qty-btn-cover d-flex">
+                                    <button
+                                      onClick={handleDecrease}
+                                      className="qty-btn"
+                                    >
+                                      -
+                                    </button>
+                                    <span>{quantity}</span>
+                                    <button
+                                      onClick={handleIncrease}
+                                      className="qty-btn"
+                                    >
+                                      +
+                                    </button>
+                                  </div>
+                                </div>
+                                </div>
+                              )}
+                            
                           </div>
                         </div>
                         <div className="col-lg-8 col-8">
@@ -458,9 +491,26 @@ function AddInCart() {
                           </div>
                           <div style={{ fontSize: "small" }}>
                             {data.description}{" "}
-                            <Link to="/" className="text-decoration-none color">
-                              More
-                            </Link>
+                            {token ? (
+                              <Link
+                                style={{ cursor: "pointer" }}
+                                className="fw-bold color text-decoration-none"
+                                data-bs-toggle="modal"
+                                data-bs-target="#exampleModal"
+                                onClick={() => addData(data._id, data.vendorId)}
+                              >
+                                More
+                              </Link>
+                            ) : (
+                              <Link
+                                data-bs-toggle="modal"
+                                data-bs-target="#exampleModal3"
+                                style={{ cursor: "pointer" }}
+                                className="fw-bold color text-decoration-none"
+                              >
+                                More
+                              </Link>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -519,7 +569,7 @@ function AddInCart() {
                 </div>
               </div>
             </div>
-            <div className="modal-footer d-flex justify-content-between">
+            {/* <div className="modal-footer d-flex justify-content-between">
               <div className="qty-btn-cover">
                 <button onClick={handleDecrease} className="qty-btn">
                   -
@@ -543,7 +593,7 @@ function AddInCart() {
                   {totalPrice}
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

@@ -17,6 +17,7 @@ function PayBill() {
   const [paymentMode, setpaymentMode] = useState([]);
   const [viewcart, setviewcart] = useState([]);
   const [totalPrices, setTotalPrice] = useState(0);
+  console.log(typeof(totalPrices));
   const [loading, setLoading] = useState(true);
 
   // const createpayment = {
@@ -36,7 +37,7 @@ function PayBill() {
   }, [viewcart]);
 
   const paymentData = {
-    amount: totalPrices,
+    amount:` ${totalPrices}00`,
     paymentMode: "cod",
     offerId: "",
   };
@@ -85,8 +86,8 @@ function PayBill() {
 
     const options = {
       key: "rzp_test_sANCigiSLRL13y", // Enter the Key ID generated from the Dashboard
-      amount: amount,
-      currency: currency,
+      amount: `${totalPrices}00`,
+      currency: "INR",
       name: "Soumya Corp.",
       description: "Test Transaction",
       order_id: order_id,

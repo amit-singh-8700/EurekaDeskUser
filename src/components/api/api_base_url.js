@@ -14,3 +14,4 @@ export const VerifyPaymentApi = `${baseUrl + "customer/verify-payment"}`;
 export const getQrUrlAPI = `${baseUrl + "table/654894521244d30041ea340b"}`;
 export const updateEmployeeAPI = `${baseUrl + "customer/profile"}`;
 export const getTopPicksAPI = `${baseUrl + "top-foods/6549fe39086e9369c3dc0191"}`;
+export const getFoodByCategory = `${baseUrl + "categories/"}`;

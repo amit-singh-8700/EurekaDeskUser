@@ -5,7 +5,9 @@ import Header from "../../components/header/Header";
 import axios from "axios";
 import {
   addToCartAPI,
+  getCategoryAPI,
   getFoodAPI,
+  getFoodByCategory,
   getFoodDetailAPI,
   getViewCart,
   login,
@@ -26,6 +28,7 @@ function AddInCart() {
   const [loading, setLoading] = useState(true);
   const [hide, setShow] = useState("d-none");
   const [open, setOpen] = React.useState(false);
+  const [catname, setcatname] = useState(["All Foods"]);
 
   const category = [
     {
@@ -115,9 +118,9 @@ function AddInCart() {
   const [step, setStep] = useState(1);
   const [phone, setphone] = useState([]);
   const [otp, setOtp] = useState([]);
-  const [price, setprice] = useState([]);
-  const [id, setid] = useState([]);
   const history = useNavigate();
+  const [Category, setcategory] = useState([]);
+  console.log(fooddetail);
 
   const addtocart = {
     _id: fooddetail._id,
@@ -135,7 +138,7 @@ function AddInCart() {
 
   console.log(addtocart);
 
-  const productPrice = price;
+  const productPrice = fooddetail.price;
 
   const handleDecrease = () => {
     if (quantity > 1) {
@@ -184,7 +187,60 @@ function AddInCart() {
     }
   };
 
-  const getFoods = async () => {
+  const getCategory = async () => {
+    try {
+      const getcategorydata = await axios.get(`${getCategoryAPI}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await getcategorydata.data;
+      setcategory(data);
+      // console.log(getFoodsAPi.data);
+      // alert("successful");
+      // setStep(3)
+      // window.location.reload(false);
+    } catch (error) {
+      console.log(error);
+      // alert("invalid credentials");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getCategory();
+  }, []);
+
+  const getFoodByCategoryFunc = async (vendor, id, name) => {
+    setcatname(name);
+    try {
+      const getFoodsAPi = await axios.get(
+        `${getFoodByCategory}${vendor}/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await getFoodsAPi.data;
+      setFood(data);
+      // console.log(getFoodsAPi.data);
+      // alert("successful");
+      // setStep(3)
+      // window.location.reload(false);
+    } catch (error) {
+      console.log(error);
+      // alert("invalid credentials");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getFoods = async (name) => {
+    setcatname(name);
     try {
       const getFoodsAPi = await axios.get(`${getFoodAPI}`, {
         headers: {
@@ -253,38 +309,6 @@ function AddInCart() {
     }
   };
 
-  const addCart2 = async (id, price) => {
-    // console.log(addtocart);
-    setid(id);
-    try {
-      setprice(price);
-      const addcartdata = await axios.post(
-        `${addToCartAPI}`,
-        {
-          _id: id,
-          unit: quantity,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log(addcartdata.res);
-      // alert("successful");
-      setShow("");
-      setOpen(true);
-
-      // window.location.reload(false);
-    } catch (error) {
-      console.log(error);
-      alert("invalid credentials");
-    } finally {
-      setQuantity(1);
-    }
-  };
-
   const handleClick = async () => {
     try {
       await axios.post(`${login}`, sinup);
@@ -347,62 +371,35 @@ function AddInCart() {
         <div className="row">
           <Header />
           <div className="col-lg-3 display-none sidebarFixed">
-            <Link to={"/"} className="text-decoration-none">
+          <Link to={"/"} className="text-decoration-none">
               <h6 className="text-secondary">
                 <i className="bi bi-arrow-left"></i> BACK TO HOME
               </h6>
             </Link>
             <h4 className="py-3">Menu</h4>
             <div>
-              <Link className="text-decoration-none text-secondary fw-bold">
-                <p>Recommended</p>
+              <Link
+                className="text-decoration-none text-secondary fw-bold"
+                onClick={() => getFoods("All Foods")}
+              >
+                <p>All Foods</p>
               </Link>
-              <Link className="text-decoration-none text-secondary fw-bold">
-                <p>Social Breakfast Trays</p>
-              </Link>
-              <Link className="text-decoration-none text-secondary fw-bold">
-                <p>Soups</p>
-              </Link>
-              <Link className="text-decoration-none text-secondary fw-bold">
-                <p>Salad and Chaat</p>
-              </Link>
-              <Link className="text-decoration-none text-secondary fw-bold">
-                <p>Social Platters</p>
-              </Link>
-              <Link className="text-decoration-none text-secondary fw-bold">
-                <p>Kebabs from social chhatt</p>
-              </Link>
-              <Link className="text-decoration-none text-secondary fw-bold">
-                <p>Munchies</p>
-              </Link>
-              <Link className="text-decoration-none text-secondary fw-bold">
-                <p>Momos</p>
-              </Link>
-              <Link className="text-decoration-none text-secondary fw-bold">
-                <p>Epic lunch Thalis</p>
-              </Link>
-              <Link className="text-decoration-none text-secondary fw-bold">
-                <p>Pita Pao</p>
-              </Link>
-              <Link className="text-decoration-none text-secondary fw-bold">
-                <p>Ladi pao</p>
-              </Link>
-              <Link className="text-decoration-none text-secondary fw-bold">
-                <p>Supreme Sandwiches</p>
-              </Link>
-              <Link className="text-decoration-none text-secondary fw-bold">
-                <p>Bad Ass Burgers</p>
-              </Link>
-              <Link className="text-decoration-none text-secondary fw-bold">
-                <p>Rolls</p>
-              </Link>
-              <Link className="text-decoration-none text-secondary fw-bold">
-                <p>Supreme Sandwiches</p>
-              </Link>
+              {Category.map((data, index) => {
+                return (
+                  <Link
+                    className="text-decoration-none text-secondary fw-bold"
+                    onClick={() =>
+                      getFoodByCategoryFunc(data.vendorId, data._id, data.name)
+                    }
+                  >
+                    <p>{data.name}</p>
+                  </Link>
+                );
+              })}
             </div>
           </div>
           <div className="col-lg-9 RightSidebarFixed align-item-end">
-            <h5 className="display-none">Social Breakfast Trays</h5>
+            <h5 className="display-none">{catname}</h5>
             <div className="d-lg-none">
               <button
                 className="filter-btn"
@@ -436,6 +433,8 @@ function AddInCart() {
                         <div className="col-lg-4 col-4 content-center">
                           <div
                             className="position-relative"
+                            data-bs-toggle="modal"
+                            data-bs-target="#exampleModal"
                             style={{ cursor: "pointer" }}
                           >
                             <img
@@ -447,37 +446,30 @@ function AddInCart() {
                               className="rounded img-fluid"
                               alt=""
                             />
-
-                            {price == 0 || data._id !== id ? (
-                              <div className="bg-white px-4 py-1 rounded shadow-sm offer-percent color position-absolute top-100 start-50 translate-middle">
-                                <span
-                                  onClick={() => addCart2(data._id, data.price)}
-                                  style={{ fontSize: "14px" }}
-                                >
-                                  Add
-                                </span>
-                              </div>
-                            ) : (
-                              <div className="bg-white px-4 py-1 rounded offer-percent color position-absolute top-100 start-50 translate-middle">
-                                <div className="modal-footer d-flex justify-content-between">
-                                  <div className="qty-btn-cover d-flex">
-                                    <button
-                                      onClick={handleDecrease}
-                                      className="qty-btn"
-                                    >
-                                      -
-                                    </button>
-                                    <span>{quantity}</span>
-                                    <button
-                                      onClick={handleIncrease}
-                                      className="qty-btn"
-                                    >
-                                      +
-                                    </button>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
+                            <div className="bg-white px-4 py-1 rounded shadow-sm offer-percent color position-absolute top-100 start-50 translate-middle">
+                              <span style={{ fontSize: "14px" }}>
+                                {token ? (
+                                  <Link
+                                    style={{ cursor: "pointer" }}
+                                    className="fw-bold color text-decoration-none"
+                                    onClick={() =>
+                                      addData(data._id, data.vendorId)
+                                    }
+                                  >
+                                    Add
+                                  </Link>
+                                ) : (
+                                  <Link
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#exampleModal3"
+                                    style={{ cursor: "pointer" }}
+                                    className="fw-bold color text-decoration-none"
+                                  >
+                                    Add
+                                  </Link>
+                                )}
+                              </span>
+                            </div>
                           </div>
                         </div>
                         <div className="col-lg-8 col-8">
@@ -496,26 +488,9 @@ function AddInCart() {
                           </div>
                           <div style={{ fontSize: "small" }}>
                             {data.description}{" "}
-                            {token ? (
-                              <Link
-                                style={{ cursor: "pointer" }}
-                                className="fw-bold color text-decoration-none"
-                                data-bs-toggle="modal"
-                                data-bs-target="#exampleModal"
-                                onClick={() => addData(data._id, data.vendorId)}
-                              >
-                                More
-                              </Link>
-                            ) : (
-                              <Link
-                                data-bs-toggle="modal"
-                                data-bs-target="#exampleModal3"
-                                style={{ cursor: "pointer" }}
-                                className="fw-bold color text-decoration-none"
-                              >
-                                More
-                              </Link>
-                            )}
+                            <Link to="/" className="text-decoration-none color">
+                              More
+                            </Link>
                           </div>
                         </div>
                       </div>
@@ -574,7 +549,7 @@ function AddInCart() {
                 </div>
               </div>
             </div>
-            {/* <div className="modal-footer d-flex justify-content-between">
+            <div className="modal-footer d-flex justify-content-between">
               <div className="qty-btn-cover">
                 <button onClick={handleDecrease} className="qty-btn">
                   -
@@ -598,7 +573,7 @@ function AddInCart() {
                   {totalPrice}
                 </div>
               </div>
-            </div> */}
+            </div>
           </div>
         </div>
       </div>

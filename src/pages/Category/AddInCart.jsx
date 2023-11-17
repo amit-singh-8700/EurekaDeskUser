@@ -219,6 +219,7 @@ function AddInCart() {
   const getFoodByCategoryFunc = async (vendor, id, name) => {
     setcatname(name);
     try {
+      setLoading(true);
       const getFoodsAPi = await axios.get(
         `${getFoodByCategory}${vendor}/${id}`,
         {
@@ -447,7 +448,7 @@ function AddInCart() {
                           data.name
                         )
                       }
-                      className="filter-btn"
+                      className="filter-btn" 
                     >
                       {data.name.slice(0,9)}
                     </button>

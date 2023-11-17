@@ -19,6 +19,9 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
+import OwlCarousel from "react-owl-carousel";
+import "owl.carousel/dist/assets/owl.carousel.css";
+import "owl.carousel/dist/assets/owl.theme.default.css";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -371,7 +374,7 @@ function AddInCart() {
         <div className="row">
           <Header />
           <div className="col-lg-3 display-none sidebarFixed">
-          <Link to={"/"} className="text-decoration-none">
+            <Link to={"/"} className="text-decoration-none">
               <h6 className="text-secondary">
                 <i className="bi bi-arrow-left"></i> BACK TO HOME
               </h6>
@@ -401,16 +404,57 @@ function AddInCart() {
           <div className="col-lg-9 RightSidebarFixed align-item-end">
             <h5 className="display-none">{catname}</h5>
             <div className="d-lg-none">
+            <OwlCarousel
+                    className="owl-theme"
+                    margin={10}
+                    ltr={true}
+                    nav={false}
+                    dots={false}
+                    slideTransition={"linear"}
+                    autoplay={false}
+                    loop={true}
+                    center={false}
+                    autoplayTimeout={3000}
+                    autoplaySpeed={8000}
+                    autoplayHoverPause={true}
+                    autoHeight={false}
+                    mouseDrag={true}
+                    responsive={{
+                      0: { items: 4 },
+                      520: { items: 4 },
+                      768: { items: 5 },
+                      1200: { items: 6 },
+                      1400: { items: 7 },
+                      1600: { items: 8 },
+                    }}
+                  >
               <button
                 className="filter-btn"
-                data-bs-toggle="modal"
-                data-bs-target="#exampleModal2"
+                // data-bs-toggle="modal"
+                // data-bs-target="#exampleModal2"
+                onClick={() => getFoods("All Foods")}
               >
                 All
               </button>
-              <button className="filter-btn">Offer</button>
-              <button className="filter-btn">Veg</button>
-              <button className="filter-btn">Non-veg</button>
+              {Category.map((data, index) => {
+                return (
+                  
+                    <button
+                      onClick={() =>
+                        getFoodByCategoryFunc(
+                          data.vendorId,
+                          data._id,
+                          data.name
+                        )
+                      }
+                      className="filter-btn"
+                    >
+                      {data.name.slice(0,9)}
+                    </button>
+                 
+                );
+              })}
+              </OwlCarousel>
             </div>
             <hr />
             <div className="row">
@@ -446,12 +490,12 @@ function AddInCart() {
                               className="rounded img-fluid"
                               alt=""
                             />
-                            <div className="bg-white px-4 py-1 rounded shadow-sm offer-percent color position-absolute top-100 start-50 translate-middle">
+                            <div className="primary-button px-4 py-1 rounded shadow-sm offer-percent color position-absolute top-100 start-50 translate-middle">
                               <span style={{ fontSize: "14px" }}>
                                 {token ? (
                                   <Link
                                     style={{ cursor: "pointer" }}
-                                    className="fw-bold color text-decoration-none"
+                                    className="fw-bold text-white text-decoration-none"
                                     onClick={() =>
                                       addData(data._id, data.vendorId)
                                     }
@@ -463,7 +507,7 @@ function AddInCart() {
                                     data-bs-toggle="modal"
                                     data-bs-target="#exampleModal3"
                                     style={{ cursor: "pointer" }}
-                                    className="fw-bold color text-decoration-none"
+                                    className="fw-bold text-white text-decoration-none"
                                   >
                                     Add
                                   </Link>
@@ -559,7 +603,7 @@ function AddInCart() {
                   +
                 </button>
               </div>
-              <div className="d-flex justify-content-between AddItems-btn px-3">
+              <div className="primary-button d-flex justify-content-between AddItems-btn px-3">
                 <div
                   className="fw-bold"
                   onClick={addCart}
@@ -625,18 +669,18 @@ function AddInCart() {
             <div className="modal-body">
               <div className="container-fluid">
                 <div className="row">
-                  {category.map((data, index) => {
+                  {food.map((data, index) => {
                     return (
                       <div className="col-4 my-2 text-center" key={data.id}>
                         <img
-                          src={require(`../../img/${data.img}`)}
+                          src={data.img}
                           className="rounded"
                           height={"70px"}
                           width={"100%"}
                           alt=""
                         />
                         <div style={{ fontSize: "11px" }}>
-                          {data.categoryName}
+                          {data.name}
                         </div>
                       </div>
                     );

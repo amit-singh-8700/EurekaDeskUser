@@ -82,20 +82,19 @@ function OrderSuccessful() {
         </div>
         <div className="row justify-content-center">
           <div className="col-lg-3">
+          <Link className="text-white text-decoration-none" to={"/"}>
             <div
-              className={`AddItems-btn text-center px-3 py-3 fw-bold`}
+              className={`primary-button text-center px-3 py-3 fw-bold`}
               style={{ cursor: "pointer" }}
               // data-bs-dismiss="modal"
             >
-              <Link className="text-white text-decoration-none" to={"/"}>
                 Go To HomePage
-              </Link>
+            
             </div>
+            </Link>
           </div>
         </div>
       </div>
-
-      <BottomMenu />
       {/* number verification */}
       {/* modal */}
     </>

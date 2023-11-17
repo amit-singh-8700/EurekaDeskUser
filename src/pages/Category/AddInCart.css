@@ -19,12 +19,25 @@
 }
 .filter-btn {
   background-color: transparent;
+
+  border: none !important;
+  /* margin-right: 5px;
+  margin-left: 5px; */
+}
+.owl-item {
   border: 1px solid grey;
   border-radius: 15px;
-  padding: 3px 15px 3px 15px;
-  margin-right: 10px;
-  margin-left: 10px;
+  text-align: center;
+  padding: 3px 7px 3px 7px;  
+  /* width: auto !important; */
+  /* margin-right: 5px !important;
+  margin-left: 5px !important; */
 }
+/* .owl-item :active {
+  width: auto !important;
+  /* margin-right: 5px !important;
+  margin-left: 5px !important; 
+} */
 .display-fixed {
   display: flex;
   width: 100%;

@@ -331,7 +331,7 @@ function PlaceOrder() {
                   />
                   {/* <Link to="/paymentMode" className="text-decoration-none"> */}
                   <div
-                    className={`AddItems-btn text-center px-3 py-2 fw-bold`}
+                    className={`primary-button text-center px-3 py-2 fw-bold`}
                     style={{ cursor: "pointer" }}
                     data-bs-dismiss="modal"
                   >

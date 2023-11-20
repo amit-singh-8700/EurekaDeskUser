@@ -31,7 +31,7 @@ function AddInCart() {
   const [loading, setLoading] = useState(true);
   const [hide, setShow] = useState("d-none");
   const [open, setOpen] = React.useState(false);
-  const [catname, setcatname] = useState(["All Foods"]);
+  const [catname, setcatname] = useState(["All"]);
 
   const category = [
     {
@@ -200,6 +200,7 @@ function AddInCart() {
       });
       const data = await getcategorydata.data;
       setcategory(data);
+      setcatname("All");
       // console.log(getFoodsAPi.data);
       // alert("successful");
       // setStep(3)
@@ -384,7 +385,7 @@ function AddInCart() {
             <div>
               <Link
                 className="text-decoration-none text-secondary fw-bold"
-                onClick={() => getFoods("All Foods")}
+                onClick={() => getFoods("All")}
               >
                 <p>All Foods</p>
               </Link>
@@ -405,7 +406,7 @@ function AddInCart() {
           <div className="col-lg-9 RightSidebarFixed align-item-end">
             <h5 className="display-none">{catname}</h5>
             <div className="d-lg-none">
-            <OwlCarousel
+              {/* <OwlCarousel
                     className="owl-theme"
                     margin={10}
                     ltr={true}
@@ -428,16 +429,17 @@ function AddInCart() {
                       1400: { items: 7 },
                       1600: { items: 8 },
                     }}
-                  >
+                  > */}
               <button
-                className="filter-btn"
-                // data-bs-toggle="modal"
-                // data-bs-target="#exampleModal2"
-                onClick={() => getFoods("All Foods")}
+                className="primary-button rounded p-2 color my-2"
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModal2"
               >
-                All
+                {catname}
+                <i className="bi bi-caret-down mx-1"></i>
               </button>
-              {Category.map((data, index) => {
+
+              {/* {Category.map((data, index) => {
                 return (
                   
                     <button
@@ -454,9 +456,17 @@ function AddInCart() {
                     </button>
                  
                 );
-              })}
-              </OwlCarousel>
+              })} */}
+              {/* </OwlCarousel> */}
             </div>
+            <div className="d-lg-none">
+              {" "}
+              <button className="filter-btn border rounded p-2">Offfer</button>
+              <button className="filter-btn border rounded p-2 mx-2">
+                Veg
+              </button>
+            </div>
+
             <hr />
             <div className="row">
               {loading ? (
@@ -484,7 +494,7 @@ function AddInCart() {
                           >
                             <img
                               src={
-                                data.images == null
+                                data.images !== null
                                   ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMgPtF8x4lhf4oH0rSo-mEMnTMGcUZhXmXvg&usqp=CAU"
                                   : `https://eureka-desk.onrender.com/images/${data.images}`
                               }
@@ -670,19 +680,33 @@ function AddInCart() {
             <div className="modal-body">
               <div className="container-fluid">
                 <div className="row">
-                  {food.map((data, index) => {
+                  {Category.map((data, index) => {
                     return (
-                      <div className="col-4 my-2 text-center" key={data.id}>
+                      <div
+                        className="col-4 my-2 text-center"
+                        key={data.id}
+                        onClick={() =>
+                          getFoodByCategoryFunc(
+                            data.vendorId,
+                            data._id,
+                            data.name
+                          )
+                        }
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      >
                         <img
-                          src={data.img}
+                          src={
+                            data.images !== null
+                              ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMgPtF8x4lhf4oH0rSo-mEMnTMGcUZhXmXvg&usqp=CAU"
+                              : `https://eureka-desk.onrender.com/images/${data.images}`
+                          }
                           className="rounded"
                           height={"70px"}
                           width={"100%"}
                           alt=""
                         />
-                        <div style={{ fontSize: "11px" }}>
-                          {data.name}
-                        </div>
+                        <div style={{ fontSize: "11px" }}>{data.name}</div>
                       </div>
                     );
                   })}

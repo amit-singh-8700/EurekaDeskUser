@@ -166,7 +166,7 @@ function PlaceOrder() {
                         <div className="food-price">
                           {" "}
                           <i className="bi bi-currency-rupee"></i>{" "}
-                          {data.food.price}
+                          {data.food.price == null ? 'null' : `${data.food.price}`}
                         </div>
                       </div>
                     </div>

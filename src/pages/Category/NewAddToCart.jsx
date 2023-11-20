@@ -19,6 +19,9 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
+import OwlCarousel from "react-owl-carousel";
+import "owl.carousel/dist/assets/owl.carousel.css";
+import "owl.carousel/dist/assets/owl.theme.default.css";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -28,34 +31,7 @@ function AddInCart() {
   const [loading, setLoading] = useState(true);
   const [hide, setShow] = useState("d-none");
   const [open, setOpen] = React.useState(false);
-  const token = sessionStorage.getItem("signature");
-  const [Category, setcategory] = useState([]);
-  const [catname, setcatname] = useState(["All Foods"]);
-  const getCategory = async () => {
-    try {
-      const getcategorydata = await axios.get(`${getCategoryAPI}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await getcategorydata.data;
-      setcategory(data);
-      // console.log(getFoodsAPi.data);
-      // alert("successful");
-      // setStep(3)
-      // window.location.reload(false);
-    } catch (error) {
-      console.log(error);
-      // alert("invalid credentials");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    getCategory();
-  }, []);
+  const [catname, setcatname] = useState(["All"]);
 
   const category = [
     {
@@ -135,6 +111,8 @@ function AddInCart() {
       categoryName: "Supreme Sandwiches",
     },
   ];
+
+  const token = sessionStorage.getItem("signature");
   const [quantity, setQuantity] = useState(1);
 
   const [food, setFood] = useState([]);
@@ -143,9 +121,9 @@ function AddInCart() {
   const [step, setStep] = useState(1);
   const [phone, setphone] = useState([]);
   const [otp, setOtp] = useState([]);
-  const [price, setprice] = useState([]);
-  const [id, setid] = useState([]);
   const history = useNavigate();
+  const [Category, setcategory] = useState([]);
+  console.log(fooddetail);
 
   const addtocart = {
     _id: fooddetail._id,
@@ -163,7 +141,7 @@ function AddInCart() {
 
   console.log(addtocart);
 
-  const productPrice = price;
+  const productPrice = fooddetail.price;
 
   const handleDecrease = () => {
     if (quantity > 1) {
@@ -212,9 +190,37 @@ function AddInCart() {
     }
   };
 
+  const getCategory = async () => {
+    try {
+      const getcategorydata = await axios.get(`${getCategoryAPI}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await getcategorydata.data;
+      setcategory(data);
+      setcatname("All");
+      // console.log(getFoodsAPi.data);
+      // alert("successful");
+      // setStep(3)
+      // window.location.reload(false);
+    } catch (error) {
+      console.log(error);
+      // alert("invalid credentials");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getCategory();
+  }, []);
+
   const getFoodByCategoryFunc = async (vendor, id, name) => {
     setcatname(name);
     try {
+      setLoading(true);
       const getFoodsAPi = await axios.get(
         `${getFoodByCategory}${vendor}/${id}`,
         {
@@ -281,8 +287,8 @@ function AddInCart() {
   };
 
   useEffect(() => {
-    getCart();
     getFoods();
+    getCart();
   }, []);
 
   const addCart = async (e) => {
@@ -298,36 +304,6 @@ function AddInCart() {
       console.log(addcartdata.res);
       // alert("successful");
 
-      setShow("");
-      setOpen(true);
-
-      // window.location.reload(false);
-    } catch (error) {
-      console.log(error);
-      alert("invalid credentials");
-    }
-  };
-
-  const addCart2 = async (id, price) => {
-    // console.log(addtocart);
-    setid(id);
-    try {
-      setprice(price);
-      const addcartdata = await axios.post(
-        `${addToCartAPI}`,
-        {
-          _id: id,
-          unit: quantity,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log(addcartdata.res);
-      // alert("successful");
       setShow("");
       setOpen(true);
 
@@ -399,7 +375,7 @@ function AddInCart() {
       <div className="container-fluid my-3 position-fixed">
         <div className="row">
           <Header />
-          <div className="col-lg-2 display-none sidebarFixed">
+          <div className="col-lg-3 display-none sidebarFixed">
             <Link to={"/"} className="text-decoration-none">
               <h6 className="text-secondary">
                 <i className="bi bi-arrow-left"></i> BACK TO HOME
@@ -409,7 +385,7 @@ function AddInCart() {
             <div>
               <Link
                 className="text-decoration-none text-secondary fw-bold"
-                onClick={() => getFoods("All Foods")}
+                onClick={() => getFoods("All")}
               >
                 <p>All Foods</p>
               </Link>
@@ -430,17 +406,67 @@ function AddInCart() {
           <div className="col-lg-9 RightSidebarFixed align-item-end">
             <h5 className="display-none">{catname}</h5>
             <div className="d-lg-none">
+              {/* <OwlCarousel
+                    className="owl-theme"
+                    margin={10}
+                    ltr={true}
+                    nav={false}
+                    dots={false}
+                    slideTransition={"linear"}
+                    autoplay={false}
+                    loop={true}
+                    center={false}
+                    autoplayTimeout={3000}
+                    autoplaySpeed={8000}
+                    autoplayHoverPause={true}
+                    autoHeight={false}
+                    mouseDrag={true}
+                    responsive={{
+                      0: { items: 4 },
+                      520: { items: 4 },
+                      768: { items: 5 },
+                      1200: { items: 6 },
+                      1400: { items: 7 },
+                      1600: { items: 8 },
+                    }}
+                  > */}
               <button
-                className="filter-btn"
+                className="primary-button rounded p-2 color my-2"
                 data-bs-toggle="modal"
                 data-bs-target="#exampleModal2"
               >
-                All
+                {catname}
+                <i className="bi bi-caret-down mx-1"></i>
               </button>
-              <button className="filter-btn">Offer</button>
-              <button className="filter-btn">Veg</button>
-              <button className="filter-btn">Non-veg</button>
+
+              {/* {Category.map((data, index) => {
+                return (
+                  
+                    <button
+                      onClick={() =>
+                        getFoodByCategoryFunc(
+                          data.vendorId,
+                          data._id,
+                          data.name
+                        )
+                      }
+                      className="filter-btn" 
+                    >
+                      {data.name.slice(0,9)}
+                    </button>
+                 
+                );
+              })} */}
+              {/* </OwlCarousel> */}
             </div>
+            <div className="d-lg-none">
+              {" "}
+              <button className="filter-btn border rounded p-2">Offfer</button>
+              <button className="filter-btn border rounded p-2 mx-2">
+                Veg
+              </button>
+            </div>
+
             <hr />
             <div className="row">
               {loading ? (
@@ -462,48 +488,43 @@ function AddInCart() {
                         <div className="col-lg-4 col-4 content-center">
                           <div
                             className="position-relative"
+                            data-bs-toggle="modal"
+                            data-bs-target="#exampleModal"
                             style={{ cursor: "pointer" }}
                           >
                             <img
                               src={
-                                data.images == null
+                                data.images !== null
                                   ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMgPtF8x4lhf4oH0rSo-mEMnTMGcUZhXmXvg&usqp=CAU"
                                   : `https://eureka-desk.onrender.com/images/${data.images}`
                               }
                               className="rounded img-fluid"
                               alt=""
                             />
-
-                            {price == 0 || data._id !== id ? (
-                              <div className="bg-white px-4 py-1 rounded shadow-sm offer-percent color position-absolute top-100 start-50 translate-middle">
-                                <span
-                                  onClick={() => addCart2(data._id, data.price)}
-                                  style={{ fontSize: "14px" }}
-                                >
-                                  Add
-                                </span>
-                              </div>
-                            ) : (
-                              <div className="bg-white px-4 py-1 rounded offer-percent color position-absolute top-100 start-50 translate-middle">
-                                <div className="modal-footer d-flex justify-content-between">
-                                  <div className="qty-btn-cover d-flex">
-                                    <button
-                                      onClick={handleDecrease}
-                                      className="qty-btn"
-                                    >
-                                      -
-                                    </button>
-                                    <span>{quantity}</span>
-                                    <button
-                                      onClick={handleIncrease}
-                                      className="qty-btn"
-                                    >
-                                      +
-                                    </button>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
+                            <div className="primary-button px-4 py-1 rounded shadow-sm offer-percent color position-absolute top-100 start-50 translate-middle">
+                              <span style={{ fontSize: "14px" }}>
+                                {token ? (
+                                  <Link
+                                    style={{ cursor: "pointer" }}
+                                    className="fw-bold text-white text-decoration-none"
+                                    onClick={() =>
+                                      addData(data._id, data.vendorId)
+                                    }
+                                  >
+                                    Add
+                                  </Link>
+                                ) : (
+                                  <Link
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#exampleModal3"
+                                    style={{ cursor: "pointer" }}
+                                    className="fw-bold text-white text-decoration-none"
+                                  >
+                                    Add
+                                  </Link>
+                                )}
+                              </span>
+                            </div>
                           </div>
                         </div>
                         <div className="col-lg-8 col-8">
@@ -522,13 +543,7 @@ function AddInCart() {
                           </div>
                           <div style={{ fontSize: "small" }}>
                             {data.description}{" "}
-                            <Link
-                              style={{ cursor: "pointer" }}
-                              className="fw-bold color text-decoration-none"
-                              data-bs-toggle="modal"
-                              data-bs-target="#exampleModal"
-                              onClick={() => addData(data._id, data.vendorId)}
-                            >
+                            <Link to="/" className="text-decoration-none color">
                               More
                             </Link>
                           </div>
@@ -589,7 +604,7 @@ function AddInCart() {
                 </div>
               </div>
             </div>
-            {/* <div className="modal-footer d-flex justify-content-between">
+            <div className="modal-footer d-flex justify-content-between">
               <div className="qty-btn-cover">
                 <button onClick={handleDecrease} className="qty-btn">
                   -
@@ -599,7 +614,7 @@ function AddInCart() {
                   +
                 </button>
               </div>
-              <div className="d-flex justify-content-between AddItems-btn px-3">
+              <div className="primary-button d-flex justify-content-between AddItems-btn px-3">
                 <div
                   className="fw-bold"
                   onClick={addCart}
@@ -613,7 +628,7 @@ function AddInCart() {
                   {totalPrice}
                 </div>
               </div>
-            </div> */}
+            </div>
           </div>
         </div>
       </div>
@@ -629,24 +644,13 @@ function AddInCart() {
                 {totalPrice}
               </div>{" "}
               <div>
-                {token ? (
-                  <Link
-                    to="/placeOrder"
-                    style={{ cursor: "pointer" }}
-                    className="fw-bold text-white text-decoration-none"
-                  >
-                    Next
-                  </Link>
-                ) : (
-                  <Link
-                    data-bs-toggle="modal"
-                    data-bs-target="#exampleModal3"
-                    style={{ cursor: "pointer" }}
-                    className="fw-bold color text-decoration-none"
-                  >
-                    Next
-                  </Link>
-                )}
+                <Link
+                  to="/placeOrder"
+                  style={{ cursor: "pointer" }}
+                  className="fw-bold text-white text-decoration-none"
+                >
+                  Next
+                </Link>
               </div>
             </div>
           </div>
@@ -676,19 +680,33 @@ function AddInCart() {
             <div className="modal-body">
               <div className="container-fluid">
                 <div className="row">
-                  {category.map((data, index) => {
+                  {Category.map((data, index) => {
                     return (
-                      <div className="col-4 my-2 text-center" key={data.id}>
+                      <div
+                        className="col-4 my-2 text-center"
+                        key={data.id}
+                        onClick={() =>
+                          getFoodByCategoryFunc(
+                            data.vendorId,
+                            data._id,
+                            data.name
+                          )
+                        }
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      >
                         <img
-                          src={require(`../../img/${data.img}`)}
+                          src={
+                            data.images !== null
+                              ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMgPtF8x4lhf4oH0rSo-mEMnTMGcUZhXmXvg&usqp=CAU"
+                              : `https://eureka-desk.onrender.com/images/${data.images}`
+                          }
                           className="rounded"
                           height={"70px"}
                           width={"100%"}
                           alt=""
                         />
-                        <div style={{ fontSize: "11px" }}>
-                          {data.categoryName}
-                        </div>
+                        <div style={{ fontSize: "11px" }}>{data.name}</div>
                       </div>
                     );
                   })}
